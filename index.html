@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cashback App</title>
+</head>
+<body>
+
+<h2>Cashback App</h2>
+<button onclick="login()">Login with Google</button>
+
+<p id="user"></p>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCLJQckahuisNfW9qd-cqlYKiTHUtD8MHw",
+    authDomain: "cashback-clean.firebaseapp.com",
+    projectId: "cashback-clean",
+    appId: "1:957439708934:web:48f146e1ecc791a1a55887"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+  const db = getFirestore(app);
+
+  window.login = async function () {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      name: user.displayName,
+      email: user.email,
+      cashback: 0
+    });
+
+    document.getElementById("user").innerText =
+      "Welcome " + user.displayName;
+  };
+</script>
+
+</body>
+</html>
