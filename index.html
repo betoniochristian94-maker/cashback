@@ -3,53 +3,17 @@
 <head>
   <title>Cashback Demo App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4CAF50">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 500px;
-      margin: auto;
-      padding: 20px;
-      background: #f4f4f9;
-      color: #333;
-    }
-    h2, h3 {
-      text-align: center;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 5px 0;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      background-color: #4CAF50;
-      color: white;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    input[type=text] {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-    #convertedLink a {
-      color: #2196F3;
-      word-break: break-word;
-    }
-    #withdrawMessage {
-      font-weight: bold;
-      color: #e91e63;
-    }
-    hr {
-      margin: 20px 0;
-      border: 0;
-      border-top: 1px solid #ccc;
-    }
+    body { font-family: Arial; max-width:500px; margin:auto; padding:20px; background:#f4f4f9; color:#333; }
+    h2,h3 { text-align:center; }
+    button { padding:10px 20px; margin:5px 0; font-size:16px; cursor:pointer; border:none; border-radius:8px; background-color:#4CAF50; color:white; transition:0.3s; }
+    button:hover { background-color:#45a049; }
+    input[type=text] { width:100%; padding:10px; margin:5px 0 10px 0; border-radius:5px; border:1px solid #ccc; }
+    #convertedLink a { color:#2196F3; word-break:break-word; }
+    #withdrawMessage { font-weight:bold; color:#e91e63; }
+    hr { margin:20px 0; border:0; border-top:1px solid #ccc; }
   </style>
 </head>
 <body>
@@ -74,105 +38,18 @@
 
 <hr>
 
-<!-- WITHDRAW / CLAIM CASHBACK -->
+<!-- WITHDRAW -->
 <h3>Withdraw / Claim Cashback</h3>
 <button onclick="withdrawCashback()">Withdraw</button>
 <p id="withdrawMessage"></p>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+<script type="module" src="app.js"></script>
 
-  // Firebase config (auth only)
-  const firebaseConfig = {
-    apiKey: "AIzaSyCLJQckahuisNfW9qd-cqlYKiTHUtD8MHw",
-    authDomain: "cashback-clean.firebaseapp.com",
-    projectId: "cashback-clean",
-    appId: "1:957439708934:web:48f146e1ecc791a1a55887"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
-
-  // LOGIN FUNCTION
-  window.login = async function() {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      localStorage.setItem('userName', user.displayName);
-      localStorage.setItem('cashback', localStorage.getItem('cashback') || 0);
-
-      document.getElementById("user").innerText = "Welcome " + user.displayName;
-      document.getElementById("cashback").innerText = localStorage.getItem('cashback');
-    } catch (error) {
-      alert(error.message);
-      console.error(error);
-    }
-  };
-
-  // ADD CASHBACK FUNCTION
-  window.addCashback = function() {
-    let current = parseInt(localStorage.getItem('cashback') || 0);
-    current += 10;
-    localStorage.setItem('cashback', current);
-    document.getElementById("cashback").innerText = current;
-  };
-
-  // LINK CONVERTER + AUTO CASHBACK
-  window.convertLink = function() {
-    const rawLink = document.getElementById("linkInput").value.trim();
-
-    if(!rawLink) {
-      alert("Please paste a link!");
-      return;
-    }
-
-    let converted = rawLink;
-
-    if(rawLink.includes("shopee")) converted = rawLink + "?ref=cashback";
-    else if(rawLink.includes("lazada")) converted = rawLink + "?ref=cashback";
-    else if(rawLink.includes("tiktok")) converted = rawLink + "?ref=cashback";
-    else {
-      alert("Only Shopee, Lazada, TikTok links are supported!");
-      return;
-    }
-
-    document.getElementById("convertedLink").innerHTML = 
-      `Converted Link: <a href="${converted}" target="_blank">${converted}</a>`;
-
-    let current = parseInt(localStorage.getItem('cashback') || 0);
-    current += 5;
-    localStorage.setItem('cashback', current);
-    document.getElementById("cashback").innerText = current;
-
-    document.getElementById("linkInput").value = "";
-  };
-
-  // WITHDRAW / CLAIM CASHBACK
-  window.withdrawCashback = function() {
-    let current = parseInt(localStorage.getItem('cashback') || 0);
-
-    if(current <= 0){
-      document.getElementById("withdrawMessage").innerText = "No cashback to withdraw!";
-      return;
-    }
-
-    localStorage.setItem('cashback', 0);
-    document.getElementById("cashback").innerText = 0;
-    document.getElementById("withdrawMessage").innerText = `You have withdrawn ₱${current}!`;
-  };
-
-  // LOAD INFO IF ALREADY LOGGED IN
-  window.onload = function() {
-    const name = localStorage.getItem('userName');
-    const cashback = localStorage.getItem('cashback');
-    if(name){
-      document.getElementById("user").innerText = "Welcome " + name;
-      document.getElementById("cashback").innerText = cashback;
-    }
-  };
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(() => console.log('Service Worker Registered'));
+}
 </script>
 
 </body>
