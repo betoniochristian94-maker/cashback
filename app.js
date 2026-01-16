@@ -9,10 +9,10 @@ import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/fireb
 // Firebase config
 // ============================
 const firebaseConfig = {
-apiKey: "AIzaSyCLJQckahuisNfW9qd-cqlYKiTHUtD8MHw",
-authDomain: "cashback-clean.firebaseapp.com",
-projectId: "cashback-clean",
-appId: "1:957439708934:web:48f146e1ecc791a1a55887"
+  apiKey: "AIzaSyCLJQckahuisNfW9qd-cqlYKiTHUtD8MHw",
+  authDomain: "cashback-clean.firebaseapp.com",
+  projectId: "cashback-clean",
+  appId: "1:957439708934:web:48f146e1ecc791a1a55887"
 };
 
 // ============================
@@ -27,94 +27,94 @@ const db = getFirestore(app);
 // Login function
 // ============================
 window.login = async function () {
-try {
-const result = await signInWithPopup(auth, provider);
-const user = result.user;
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
 
-const docRef = doc(db, "users", user.uid);  
-const docSnap = await getDoc(docRef);  
+    const docRef = doc(db, "users", user.uid);  
+    const docSnap = await getDoc(docRef);  
 
-if (!docSnap.exists()) {  
-  await setDoc(docRef, {  
-    name: user.displayName,  
-    cashback: 0,  
-    createdAt: new Date()  
-  });  
-}  
+    if (!docSnap.exists()) {  
+      await setDoc(docRef, {  
+        name: user.displayName,  
+        cashback: 0,  
+        createdAt: new Date()  
+      });  
+    }  
 
-const userData = (await getDoc(docRef)).data();  
+    const userData = (await getDoc(docRef)).data();  
 
-localStorage.setItem('userName', user.displayName);  
-localStorage.setItem('cashback', userData.cashback);  
+    localStorage.setItem('userName', user.displayName);  
+    localStorage.setItem('cashback', userData.cashback);
 
-document.getElementById("user").innerText = "Welcome " + user.displayName;  
-document.getElementById("cashback").innerText = userData.cashback;
+    document.getElementById("user").innerText = "Welcome " + user.displayName;  
+    document.getElementById("cashback").innerText = userData.cashback;
 
-} catch (error) {
-console.error(error);
-alert(error.message);
-}
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
 };
 
 // ============================
 // Add Cashback function
 // ============================
 window.addCashback = async function () {
-const uid = auth.currentUser.uid;
-const docRef = doc(db, "users", uid);
-const docSnap = await getDoc(docRef);
+  const uid = auth.currentUser.uid;
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
 
-let current = docSnap.data().cashback || 0;
-current += 10;
+  let current = docSnap.data().cashback || 0;
+  current += 10;
 
-await setDoc(docRef, { cashback: current }, { merge: true });
+  await setDoc(docRef, { cashback: current }, { merge: true });
 
-localStorage.setItem('cashback', current);
-document.getElementById("cashback").innerText = current;
+  localStorage.setItem('cashback', current);
+  document.getElementById("cashback").innerText = current;
 };
 
 // ============================
 // Withdraw function
 // ============================
 window.withdrawCashback = async function () {
-const uid = auth.currentUser.uid;
-const docRef = doc(db, "users", uid);
-const docSnap = await getDoc(docRef);
-let current = docSnap.data().cashback || 0;
+  const uid = auth.currentUser.uid;
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+  let current = docSnap.data().cashback || 0;
 
-if (current <= 0) {
-document.getElementById("withdrawMessage").innerText = "No cashback to withdraw!";
-return;
-}
+  if (current <= 0) {
+    document.getElementById("withdrawMessage").innerText = "No cashback to withdraw!";
+    return;
+  }
 
-await setDoc(docRef, { cashback: 0 }, { merge: true });
+  await setDoc(docRef, { cashback: 0 }, { merge: true });
 
-localStorage.setItem('cashback', 0);
-document.getElementById("cashback").innerText = 0;
-document.getElementById("withdrawMessage").innerText = 'You withdrew ₱${current};
+  localStorage.setItem('cashback', 0);
+  document.getElementById("cashback").innerText = 0;
+  document.getElementById("withdrawMessage").innerText = `You withdrew ₱${current}`;
 };
 
 // ============================
 // Convert Link function (demo placeholder)
 // ============================
 window.convertLink = function () {
-const input = document.getElementById("linkInput").value;
-if(!input) {
-alert("Please paste a link first!");
-return;
-}
-const converted = "https://s.shopee.ph/demo?ref=cashback"; // Placeholder
-document.getElementById("convertedLink").innerText = "Converted Link: " + converted;
+  const input = document.getElementById("linkInput").value;
+  if(!input) {
+    alert("Please paste a link first!");
+    return;
+  }
+  const converted = "https://s.shopee.ph/demo?ref=cashback"; // Placeholder
+  document.getElementById("convertedLink").innerText = "Converted Link: " + converted;
 };
 
 // ============================
 // Load info if already logged in
 // ============================
 window.onload = async function () {
-const name = localStorage.getItem('userName');
-const cashback = localStorage.getItem('cashback');
-if (name) {
-document.getElementById("user").innerText = "Welcome " + name;
-document.getElementById("cashback").innerText = cashback;
-}
+  const name = localStorage.getItem('userName');
+  const cashback = localStorage.getItem('cashback');
+  if (name) {
+    document.getElementById("user").innerText = "Welcome " + name;
+    document.getElementById("cashback").innerText = cashback;
+  }
 };
