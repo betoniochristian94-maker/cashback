@@ -91,7 +91,7 @@ await setDoc(docRef, { cashback: 0 }, { merge: true });
 
 localStorage.setItem('cashback', 0);
 document.getElementById("cashback").innerText = 0;
-document.getElementById("withdrawMessage").innerText = You withdrew ₱${current};
+document.getElementById("withdrawMessage").innerText = 'You withdrew ₱${current};
 };
 
 // ============================
