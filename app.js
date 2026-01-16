@@ -2,7 +2,7 @@
 // Firebase imports
 // ============================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ============================
@@ -24,32 +24,56 @@ const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
 // ============================
+// Buttons
+// ============================
+const addBtn = document.querySelector(".add");
+const withdrawBtn = document.querySelector(".withdraw");
+
+// Disable buttons by default
+addBtn.disabled = true;
+withdrawBtn.disabled = true;
+
+// ============================
+// Auth State Listener
+// ============================
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    console.log("Logged in as:", user.displayName);
+    addBtn.disabled = false;
+    withdrawBtn.disabled = false;
+
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      await setDoc(docRef, {
+        name: user.displayName,
+        cashback: 0,
+        createdAt: new Date()
+      });
+    }
+
+    const userData = (await getDoc(docRef)).data();
+
+    localStorage.setItem('userName', user.displayName);
+    localStorage.setItem('cashback', userData.cashback);
+
+    document.getElementById("user").innerText = "Welcome " + user.displayName;
+    document.getElementById("cashback").innerText = userData.cashback;
+
+  } else {
+    console.log("Not logged in");
+    addBtn.disabled = true;
+    withdrawBtn.disabled = true;
+  }
+});
+
+// ============================
 // Login function
 // ============================
 window.login = async function () {
   try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-
-    const docRef = doc(db, "users", user.uid);  
-    const docSnap = await getDoc(docRef);  
-
-    if (!docSnap.exists()) {  
-      await setDoc(docRef, {  
-        name: user.displayName,  
-        cashback: 0,  
-        createdAt: new Date()  
-      });  
-    }  
-
-    const userData = (await getDoc(docRef)).data();  
-
-    localStorage.setItem('userName', user.displayName);  
-    localStorage.setItem('cashback', userData.cashback);
-
-    document.getElementById("user").innerText = "Welcome " + user.displayName;  
-    document.getElementById("cashback").innerText = userData.cashback;
-
+    await signInWithPopup(auth, provider);
   } catch (error) {
     console.error(error);
     alert(error.message);
@@ -60,8 +84,13 @@ window.login = async function () {
 // Add Cashback function
 // ============================
 window.addCashback = async function () {
-  const uid = auth.currentUser.uid;
-  const docRef = doc(db, "users", uid);
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Please login first!");
+    return;
+  }
+
+  const docRef = doc(db, "users", user.uid);
   const docSnap = await getDoc(docRef);
 
   let current = docSnap.data().cashback || 0;
@@ -77,11 +106,16 @@ window.addCashback = async function () {
 // Withdraw function
 // ============================
 window.withdrawCashback = async function () {
-  const uid = auth.currentUser.uid;
-  const docRef = doc(db, "users", uid);
-  const docSnap = await getDoc(docRef);
-  let current = docSnap.data().cashback || 0;
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Please login first!");
+    return;
+  }
 
+  const docRef = doc(db, "users", user.uid);
+  const docSnap = await getDoc(docRef);
+
+  let current = docSnap.data().cashback || 0;
   if (current <= 0) {
     document.getElementById("withdrawMessage").innerText = "No cashback to withdraw!";
     return;
@@ -108,9 +142,9 @@ window.convertLink = function () {
 };
 
 // ============================
-// Load info if already logged in
+// Load info if already logged in (local storage fallback)
 // ============================
-window.onload = async function () {
+window.onload = function () {
   const name = localStorage.getItem('userName');
   const cashback = localStorage.getItem('cashback');
   if (name) {
