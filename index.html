@@ -10,7 +10,8 @@
 <style>
 body {
   font-family: Arial, sans-serif;
-  background: #f5f7fa;
+  background:linear-gradient(135deg, #e8f5e9, #ffffff);
+}
   margin: 0;
   padding: 0;
 }
@@ -41,7 +42,9 @@ button {
   border: none;
   border-radius: 8px;
   font-size: 16px;
-  cursor: pointer;
+  cursor::pointer{
+  transform: scale(0.97);
+}
 }
 
 .login {
@@ -90,7 +93,7 @@ input {
 <div class="container">
 
   <div class="card">
-    <h2>💸 Cashback App</h2>
+    <h2>💸 Cashbacker</h2>
     <button class="login" onclick="login()">Login with Google</button>
     <p id="user" class="center small"></p>
   </div>
@@ -114,7 +117,10 @@ input {
     <p id="withdrawMessage" class="small center"></p>
   </div>
 
-</div>
+</div<p class="center small">
+  © 2026 CashBacker • Demo App
+</p>
+
 
 </body>
 </html>
