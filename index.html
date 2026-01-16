@@ -1,56 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Cashback Demo App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4CAF50">
-  <style>
-    body { font-family: Arial; max-width:500px; margin:auto; padding:20px; background:#f4f4f9; color:#333; }
-    h2,h3 { text-align:center; }
-    button { padding:10px 20px; margin:5px 0; font-size:16px; cursor:pointer; border:none; border-radius:8px; background-color:#4CAF50; color:white; transition:0.3s; }
-    button:hover { background-color:#45a049; }
-    input[type=text] { width:100%; padding:10px; margin:5px 0 10px 0; border-radius:5px; border:1px solid #ccc; }
-    #convertedLink a { color:#2196F3; word-break:break-word; }
-    #withdrawMessage { font-weight:bold; color:#e91e63; }
-    hr { margin:20px 0; border:0; border-top:1px solid #ccc; }
-  </style>
-</head>
-<body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cashback App</title>
 
-<h2>Cashback Demo App</h2>
+<link rel="manifest" href="manifest.json">
 
-<!-- LOGIN -->
-<button onclick="login()">Login with Google</button>
-<p id="user"></p>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f7fa;
+  margin: 0;
+  padding: 0;
+}
 
-<!-- CASHBACK -->
-<h3>Your Cashback: ₱<span id="cashback">0</span></h3>
-<button onclick="addCashback()">Add ₱10</button>
+.container {
+  max-width: 420px;
+  margin: auto;
+  padding: 20px;
+}
 
-<hr>
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
 
-<!-- LINK CONVERTER -->
-<h3>Paste your link here:</h3>
-<input type="text" id="linkInput" placeholder="Paste Shopee/TikTok/Lazada link">
-<button onclick="convertLink()">Convert Link</button>
-<p id="convertedLink"></p>
+h2, h3 {
+  margin-top: 0;
+  text-align: center;
+}
 
-<hr>
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
 
-<!-- WITHDRAW -->
-<h3>Withdraw / Claim Cashback</h3>
-<button onclick="withdrawCashback()">Withdraw</button>
-<p id="withdrawMessage"></p>
+.login {
+  background: #4285F4;
+  color: #fff;
+}
+
+.add {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.convert {
+  background: #ff9800;
+  color: #fff;
+}
+
+.withdraw {
+  background: #d32f2f;
+  color: #fff;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.center {
+  text-align: center;
+}
+
+.small {
+  font-size: 14px;
+  color: #555;
+}
+</style>
 
 <script type="module" src="app.js"></script>
+</head>
 
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
-    .then(() => console.log('Service Worker Registered'));
-}
-</script>
+<body>
+
+<div class="container">
+
+  <div class="card">
+    <h2>💸 Cashback App</h2>
+    <button class="login" onclick="login()">Login with Google</button>
+    <p id="user" class="center small"></p>
+  </div>
+
+  <div class="card">
+    <h3>Your Cashback</h3>
+    <h2 class="center">₱<span id="cashback">0</span></h2>
+    <button class="add" onclick="addCashback()">+ ₱10</button>
+  </div>
+
+  <div class="card">
+    <h3>Convert Shopping Link</h3>
+    <input id="linkInput" placeholder="Paste Shopee / TikTok / Lazada link">
+    <button class="convert" onclick="convertLink()">Convert Link</button>
+    <p id="convertedLink" class="small"></p>
+  </div>
+
+  <div class="card">
+    <h3>Withdraw Cashback</h3>
+    <button class="withdraw" onclick="withdrawCashback()">Withdraw</button>
+    <p id="withdrawMessage" class="small center"></p>
+  </div>
+
+</div>
 
 </body>
 </html>
