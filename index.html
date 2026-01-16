@@ -10,8 +10,7 @@
 <style>
 body {
   font-family: Arial, sans-serif;
-  background:linear-gradient(135deg, #e8f5e9, #ffffff);
-}
+  background: linear-gradient(135deg, #e8f5e9, #ffffff);
   margin: 0;
   padding: 0;
 }
@@ -42,9 +41,11 @@ button {
   border: none;
   border-radius: 8px;
   font-size: 16px;
-  cursor::pointer{
-  transform: scale(0.97);
+  cursor: pointer;
 }
+
+button:active {
+  transform: scale(0.97);
 }
 
 .login {
@@ -84,8 +85,6 @@ input {
   color: #555;
 }
 </style>
-
-<script type="module" src="app.js"></script>
 </head>
 
 <body>
@@ -117,7 +116,9 @@ input {
     <p id="withdrawMessage" class="small center"></p>
   </div>
 
-</div<p class="center small">
+</div>
+
+<p class="center small">
   © 2026 CashBacker • Demo App
 </p>
 
