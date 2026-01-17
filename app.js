@@ -1,8 +1,23 @@
+// ============================
+// Firebase imports
+// ============================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  getDoc 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// ============================
 // Firebase config
+// ============================
 const firebaseConfig = {
   apiKey: "AIzaSyCLJQckahuisNfW9qd-cqlYKiTHUtD8MHw",
   authDomain: "cashback-clean.firebaseapp.com",
@@ -10,115 +25,107 @@ const firebaseConfig = {
   appId: "1:957439708934:web:48f146e1ecc791a1a55887"
 };
 
-// Initialize Firebase
+// ============================
+// Init Firebase
+// ============================
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-// Buttons
-const loginBtn = document.querySelector(".login");
-const addBtn = document.querySelector(".add");
-const withdrawBtn = document.querySelector(".withdraw");
-const convertBtn = document.querySelector(".convert");
+// ============================
+// GLOBAL USER ID
+// ============================
+let CURRENT_UID = null;
 
-// Disable add & withdraw before login
-addBtn.disabled = true;
-withdrawBtn.disabled = true;
-
-// Event listeners
-loginBtn.addEventListener("click", login);
-addBtn.addEventListener("click", addCashback);
-withdrawBtn.addEventListener("click", withdrawCashback);
-convertBtn.addEventListener("click", convertLink);
-
-// Login function
-async function login() {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-
-    const docRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
-      await setDoc(docRef, { name: user.displayName, cashback: 0, createdAt: new Date() });
-    }
-
-    const userData = (await getDoc(docRef)).data();
-    localStorage.setItem('userName', user.displayName);
-    localStorage.setItem('cashback', userData.cashback);
-
-    document.getElementById("user").innerText = "Welcome " + user.displayName;
-    document.getElementById("cashback").innerText = userData.cashback;
-
-  } catch (error) {
-    alert(error.message);
-    console.error(error);
-  }
-}
-
-// Enable buttons if logged in
+// ============================
+// AUTH STATE LISTENER (IMPORTANT)
+// ============================
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    addBtn.disabled = false;
-    withdrawBtn.disabled = false;
+    CURRENT_UID = user.uid;
 
-    const docRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(docRef);
-    const userData = docSnap.data();
-    document.getElementById("user").innerText = "Welcome " + user.displayName;
-    document.getElementById("cashback").innerText = userData.cashback;
-  } else {
-    addBtn.disabled = true;
-    withdrawBtn.disabled = true;
+    const ref = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      await setDoc(ref, {
+        name: user.displayName,
+        cashback: 0
+      });
+    }
+
+    const data = (await getDoc(ref)).data();
+
+    document.getElementById("user").innerText =
+      "Welcome " + user.displayName;
+    document.getElementById("cashback").innerText =
+      data.cashback;
+
   }
 });
 
-// Add Cashback
-async function addCashback() {
-  const uid = auth.currentUser.uid;
-  const docRef = doc(db, "users", uid);
-  const docSnap = await getDoc(docRef);
-  let current = docSnap.data().cashback || 0;
+// ============================
+// LOGIN
+// ============================
+window.login = async function () {
+  await signInWithPopup(auth, provider);
+};
+
+// ============================
+// ADD CASHBACK
+// ============================
+window.addCashback = async function () {
+  if (!CURRENT_UID) {
+    alert("Please login first");
+    return;
+  }
+
+  const ref = doc(db, "users", CURRENT_UID);
+  const snap = await getDoc(ref);
+  let current = snap.data().cashback || 0;
+
   current += 10;
-  await setDoc(docRef, { cashback: current }, { merge: true });
-  localStorage.setItem('cashback', current);
+
+  await setDoc(ref, { cashback: current }, { merge: true });
   document.getElementById("cashback").innerText = current;
-}
+};
 
-// Withdraw Cashback
-async function withdrawCashback() {
-  const uid = auth.currentUser.uid;
-  const docRef = doc(db, "users", uid);
-  const docSnap = await getDoc(docRef);
-  let current = docSnap.data().cashback || 0;
-  if(current <= 0){
-    document.getElementById("withdrawMessage").innerText = "No cashback to withdraw!";
+// ============================
+// WITHDRAW
+// ============================
+window.withdrawCashback = async function () {
+  if (!CURRENT_UID) {
+    alert("Please login first");
     return;
   }
-  await setDoc(docRef, { cashback: 0 }, { merge: true });
-  localStorage.setItem('cashback', 0);
+
+  const ref = doc(db, "users", CURRENT_UID);
+  const snap = await getDoc(ref);
+  let current = snap.data().cashback || 0;
+
+  if (current <= 0) {
+    document.getElementById("withdrawMessage").innerText =
+      "No cashback to withdraw!";
+    return;
+  }
+
+  await setDoc(ref, { cashback: 0 }, { merge: true });
   document.getElementById("cashback").innerText = 0;
-  document.getElementById("withdrawMessage").innerText = `You withdrew ₱${current}`;
-}
+  document.getElementById("withdrawMessage").innerText =
+    `You withdrew ₱${current}`;
+};
 
-// Convert Link (demo)
-function convertLink() {
+// ============================
+// CONVERT LINK
+// ============================
+window.convertLink = function () {
   const input = document.getElementById("linkInput").value;
-  if(!input){
-    alert("Please paste a link first!");
+  if (!input) {
+    alert("Paste a link first");
     return;
   }
-  const converted = "https://s.shopee.ph/demo?ref=cashback";
-  document.getElementById("convertedLink").innerText = "Converted Link: " + converted;
-}
 
-// Load info if already logged in
-window.onload = () => {
-  const name = localStorage.getItem('userName');
-  const cashback = localStorage.getItem('cashback');
-  if(name){
-    document.getElementById("user").innerText = "Welcome " + name;
-    document.getElementById("cashback").innerText = cashback;
-  }
+  document.getElementById("convertedLink").innerText =
+    "Converted Link: https://s.shopee.ph/demo?ref=cashback";
 };
