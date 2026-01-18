@@ -1,9 +1,9 @@
-// ============================
-// Firebase (AUTH ONLY)
-// ============================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+// ============================
+// Firebase config
+// ============================
 const firebaseConfig = {
   apiKey: "AIzaSyCLJQckahuisNfW9qd-cqlYKiTHUtD8MHw",
   authDomain: "cashback-clean.firebaseapp.com",
@@ -11,22 +11,53 @@ const firebaseConfig = {
   appId: "1:957439708934:web:48f146e1ecc791a1a55887"
 };
 
+// ============================
+// Initialize Firebase
+// ============================
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 // ============================
-// LOGIN
+// Helpers
+// ============================
+function isLoggedIn() {
+  return !!localStorage.getItem("userName");
+}
+
+function updateUI() {
+  const logged = isLoggedIn();
+  document.querySelector(".add").disabled = !logged;
+  document.querySelector(".withdraw").disabled = !logged;
+  document.querySelector(".convert").disabled = !logged;
+  document.getElementById("loginBtn").style.display = logged ? "none" : "block";
+}
+
+// ============================
+// Login
 // ============================
 window.login = async function () {
-  const result = await signInWithPopup(auth, provider);
-  localStorage.setItem("userName", result.user.displayName);
-  localStorage.setItem("cashback", localStorage.getItem("cashback") || 0);
-  render();
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    localStorage.setItem("userName", user.displayName);
+    localStorage.setItem("cashback", localStorage.getItem("cashback") || 0);
+
+    document.getElementById("user").innerText =
+      "Welcome " + user.displayName;
+    document.getElementById("cashback").innerText =
+      localStorage.getItem("cashback");
+
+    updateUI();
+
+  } catch (error) {
+    alert(error.message);
+  }
 };
 
 // ============================
-// ADD CASHBACK (LOCAL ONLY)
+// Add Cashback
 // ============================
 window.addCashback = function () {
   let current = parseInt(localStorage.getItem("cashback") || 0);
@@ -36,33 +67,42 @@ window.addCashback = function () {
 };
 
 // ============================
-// WITHDRAW
+// Withdraw
 // ============================
 window.withdrawCashback = function () {
   let current = parseInt(localStorage.getItem("cashback") || 0);
+
   if (current <= 0) {
-    document.getElementById("withdrawMessage").innerText = "No cashback to withdraw";
+    document.getElementById("withdrawMessage").innerText =
+      "No cashback to withdraw!";
     return;
   }
+
   localStorage.setItem("cashback", 0);
   document.getElementById("cashback").innerText = 0;
-  document.getElementById("withdrawMessage").innerText = `You withdrew ₱${current}`;
+  document.getElementById("withdrawMessage").innerText =
+    "You withdrew ₱" + current;
 };
 
 // ============================
-// CONVERT LINK
+// Convert Link (demo)
 // ============================
 window.convertLink = function () {
   const input = document.getElementById("linkInput").value;
-  if (!input) return alert("Paste a link first");
+  if (!input) {
+    alert("Please paste a link first");
+    return;
+  }
+
+  const converted = "https://s.shopee.ph/demo?ref=cashback";
   document.getElementById("convertedLink").innerText =
-    "Converted Link: https://s.shopee.ph/demo?ref=cashback";
+    "Converted Link: " + converted;
 };
 
 // ============================
-// RENDER
+// On Load
 // ============================
-function render() {
+window.onload = function () {
   const name = localStorage.getItem("userName");
   const cashback = localStorage.getItem("cashback") || 0;
 
@@ -70,6 +110,6 @@ function render() {
     document.getElementById("user").innerText = "Welcome " + name;
     document.getElementById("cashback").innerText = cashback;
   }
-}
 
-window.onload = render;
+  updateUI();
+};
