@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cashback App</title>
-<link rel="manifest" href="manifest.json">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cashbacker App</title>
+
+<link rel="manifest" href="manifest.json" />
 
 <style>
 body {
@@ -13,11 +14,13 @@ body {
   margin: 0;
   padding: 0;
 }
+
 .container {
   max-width: 420px;
   margin: auto;
   padding: 20px;
 }
+
 .card {
   background: #fff;
   padding: 20px;
@@ -25,7 +28,12 @@ body {
   margin-bottom: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
-h2, h3 { margin-top: 0; text-align: center; }
+
+h2, h3 {
+  text-align: center;
+  margin-top: 0;
+}
+
 button {
   width: 100%;
   padding: 12px;
@@ -35,11 +43,21 @@ button {
   font-size: 16px;
   cursor: pointer;
 }
-button:active { transform: scale(0.97); }
+
+button:active {
+  transform: scale(0.97);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .login { background: #4285F4; color: #fff; }
 .add { background: #2e7d32; color: #fff; }
 .convert { background: #ff9800; color: #fff; }
 .withdraw { background: #d32f2f; color: #fff; }
+
 input {
   width: 100%;
   padding: 10px;
@@ -47,40 +65,44 @@ input {
   border-radius: 6px;
   border: 1px solid #ccc;
 }
+
 .center { text-align: center; }
 .small { font-size: 14px; color: #555; }
 </style>
 </head>
 
 <body>
+
 <div class="container">
+
   <div class="card">
     <h2>💸 Cashbacker</h2>
-    <button class="login">Login with Google</button>
+    <button class="login" id="loginBtn" onclick="login()">Login with Google</button>
     <p id="user" class="center small"></p>
   </div>
 
   <div class="card">
     <h3>Your Cashback</h3>
     <h2 class="center">₱<span id="cashback">0</span></h2>
-    <button class="add">+ ₱10</button>
+    <button class="add" onclick="addCashback()">+ ₱10</button>
   </div>
 
   <div class="card">
     <h3>Convert Shopping Link</h3>
-    <input id="linkInput" placeholder="Paste Shopee / TikTok / Lazada link">
-    <button class="convert">Convert Link</button>
+    <input id="linkInput" placeholder="Paste Shopee / TikTok / Lazada link" />
+    <button class="convert" onclick="convertLink()">Convert Link</button>
     <p id="convertedLink" class="small"></p>
   </div>
 
   <div class="card">
     <h3>Withdraw Cashback</h3>
-    <button class="withdraw">Withdraw</button>
+    <button class="withdraw" onclick="withdrawCashback()">Withdraw</button>
     <p id="withdrawMessage" class="small center"></p>
   </div>
+
 </div>
 
-<p class="center small">© 2026 CashBacker • Demo App</p>
+<p class="center small">© 2026 Cashbacker • Demo App</p>
 
 <script type="module" src="app.js"></script>
 </body>
