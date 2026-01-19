@@ -32,17 +32,31 @@ button {
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
-  transition: transform 0.1s ease;
 }
 
 button:active {
   transform: scale(0.97);
 }
 
-.login { background: #4285F4; color: #fff; }
-.add { background: #2e7d32; color: #fff; }
-.convert { background: #ff9800; color: #fff; }
-.withdraw { background: #d32f2f; color: #fff; }
+.login {
+  background: #4285F4;
+  color: #fff;
+}
+
+.add {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.convert {
+  background: #ff9800;
+  color: #fff;
+}
+
+.withdraw {
+  background: #d32f2f;
+  color: #fff;
+}
 
 input {
   width: 100%;
@@ -52,5 +66,11 @@ input {
   border: 1px solid #ccc;
 }
 
-.center { text-align: center; }
-.small { font-size: 14px; color: #555; }
+.center {
+  text-align: center;
+}
+
+.small {
+  font-size: 14px;
+  color: #555;
+}
