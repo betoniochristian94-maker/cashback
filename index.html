@@ -1,41 +1,54 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cashback App</title>
 
-  <title>Cashbacker</title>
-
-  <!-- PWA Manifest -->
+  <!-- Manifest for PWA -->
   <link rel="manifest" href="manifest.json">
 
-  <!-- Theme color -->
-  <meta name="theme-color" content="#22c55e">
+  <!-- Link sa bagong CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <h1>Cashbacker</h1>
+  <div class="container">
 
-  <p id="user">Not logged in</p>
-  <p>Cashback: ₱<span id="cashback">0</span></p>
+    <!-- Login Card -->
+    <div class="card">
+      <h2>💸 Cashbacker</h2>
+      <button id="loginBtn" class="login" onclick="login()">Login with Google</button>
+      <p id="user" class="center small"></p>
+    </div>
 
-  <button id="loginBtn" onclick="login()">Login with Google</button>
-  <br><br>
+    <!-- Cashback Card -->
+    <div class="card">
+      <h3>Your Cashback</h3>
+      <h2 class="center">₱<span id="cashback">0</span></h2>
+      <button class="add" onclick="addCashback()">+ ₱10</button>
+    </div>
 
-  <button class="add" onclick="addCashback()">+₱10</button>
-  <button class="withdraw" onclick="withdrawCashback()">Withdraw</button>
-  <p id="withdrawMessage"></p>
+    <!-- Convert Link Card -->
+    <div class="card">
+      <h3>Convert Shopping Link</h3>
+      <input id="linkInput" placeholder="Paste Shopee / TikTok / Lazada link">
+      <button class="convert" onclick="convertLink()">Convert Link</button>
+      <p id="convertedLink" class="small"></p>
+    </div>
 
-  <br><br>
+    <!-- Withdraw Card -->
+    <div class="card">
+      <h3>Withdraw Cashback</h3>
+      <button class="withdraw" onclick="withdrawCashback()">Withdraw</button>
+      <p id="withdrawMessage" class="small center"></p>
+    </div>
 
-  <input id="linkInput" placeholder="Paste link here">
-  <button class="convert" onclick="convertLink()">Convert Link</button>
-  <p id="convertedLink"></p>
+  </div>
 
   <p class="center small">© 2026 Cashbacker • Demo App</p>
 
-  <!-- App Logic -->
+  <!-- App JS -->
   <script type="module" src="app.js"></script>
 
   <!-- Service Worker -->
