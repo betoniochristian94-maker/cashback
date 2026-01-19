@@ -1,0 +1,84 @@
+/* ===== Body & Container ===== */
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #e8f5e9, #ffffff);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 420px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* ===== Card Style ===== */
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* ===== Headings ===== */
+h2, h3 {
+  margin-top: 0;
+  text-align: center;
+}
+
+/* ===== Buttons ===== */
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* Specific buttons colors */
+.login {
+  background: #4285F4;
+  color: #fff;
+}
+
+.add {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.convert {
+  background: #ff9800;
+  color: #fff;
+}
+
+.withdraw {
+  background: #d32f2f;
+  color: #fff;
+}
+
+/* ===== Input Fields ===== */
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* ===== Text Alignment ===== */
+.center {
+  text-align: center;
+}
+
+.small {
+  font-size: 14px;
+  color: #555;
+}
