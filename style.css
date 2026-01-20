@@ -38,25 +38,10 @@ button:active {
   transform: scale(0.97);
 }
 
-.login {
-  background: #4285F4;
-  color: #fff;
-}
-
-.add {
-  background: #2e7d32;
-  color: #fff;
-}
-
-.convert {
-  background: #ff9800;
-  color: #fff;
-}
-
-.withdraw {
-  background: #d32f2f;
-  color: #fff;
-}
+.login { background: #4285F4; color: #fff; }
+.add { background: #2e7d32; color: #fff; }
+.convert { background: #ff9800; color: #fff; }
+.withdraw { background: #d32f2f; color: #fff; }
 
 input {
   width: 100%;
@@ -66,14 +51,9 @@ input {
   border: 1px solid #ccc;
 }
 
-.center {
-  text-align: center;
-}
+.center { text-align: center; }
+.small { font-size: 14px; color: #555; }
 
-.small {
-  font-size: 14px;
-  color: #555;
-}
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
