@@ -1,11 +1,18 @@
-// ===== Affiliate IDs =====
-const shopeeAffiliateID = "13316510024"; // Shopee Affiliate ID
-const tiktokAffiliateID = "13316510024"; // TikTok Affiliate ID
+// ============================
+// CONFIGURATION
+// ============================
+const shopeeAffiliateID = "123456789"; // Shopee affiliate ID mo
+const tiktokAffiliateID = "13316510024"; // TikTok affiliate ID mo
+const commissionRate = 0.10; // 10% commission per item (demo)
 
-// ===== Cashback & User =====
+// ============================
+// STATE
+// ============================
 let cashback = 0;
 
-// Elements
+// ============================
+// ELEMENTS
+// ============================
 const cashbackEl = document.getElementById("cashback");
 const withdrawMsg = document.getElementById("withdrawMessage");
 const convertResult = document.getElementById("convertedLink");
@@ -13,34 +20,41 @@ const linkInput = document.getElementById("linkInput");
 const userEl = document.getElementById("user");
 const loginBtn = document.getElementById("loginBtn");
 
-// ===== Login (demo) =====
+// ============================
+// LOGIN (DEMO)
+// ============================
 function login() {
   userEl.textContent = "Welcome Christian Betonio";
   loginBtn.style.display = "none";
-  alert("✅ Login successful!");
+  alert("Login successful!");
 }
 
-// ===== Add Cashback =====
+// ============================
+// ADD CASHBACK
+// ============================
 function addCashback() {
   cashback += 10;
   cashbackEl.textContent = cashback;
-  alert("✅ ₱10 cashback added!");
 }
 
-// ===== Withdraw Cashback =====
+// ============================
+// WITHDRAW CASHBACK
+// ============================
 function withdrawCashback() {
   if (cashback <= 0) {
-    withdrawMsg.textContent = "❌ No cashback to withdraw!";
+    withdrawMsg.textContent = "No cashback to withdraw!";
     return;
   }
 
-  alert(`💸 You withdrew ₱${cashback}!`);
+  alert("💸 Withdrawal request sent!");
   cashback = 0;
   cashbackEl.textContent = cashback;
   withdrawMsg.textContent = "";
 }
 
-// ===== Convert Link with Affiliate IDs =====
+// ============================
+// CONVERT LINK WITH ESTIMATED COMMISSION
+// ============================
 function convertLink() {
   const input = linkInput.value.trim();
 
@@ -51,39 +65,25 @@ function convertLink() {
 
   let converted = input;
 
-  // Shopee Link
+  // Add affiliate IDs
   if (input.includes("shopee.ph")) {
-    if (input.includes("?")) {
-      converted += `&aff_id=${shopeeAffiliateID}`;
-    } else {
-      converted += `?aff_id=${shopeeAffiliateID}`;
-    }
+    converted += input.includes("?") ? `&aff_id=${shopeeAffiliateID}` : `?aff_id=${shopeeAffiliateID}`;
+  } else if (input.includes("vt.tiktok.com") || input.includes("www.tiktok.com")) {
+    converted += input.includes("?") ? `&aff_id=${tiktokAffiliateID}` : `?aff_id=${tiktokAffiliateID}`;
   }
 
-  // TikTok Link
-  else if (input.includes("vt.tiktok.com") || input.includes("www.tiktok.com")) {
-    if (input.includes("?")) {
-      converted += `&aff_id=${tiktokAffiliateID}`;
-    } else {
-      converted += `?aff_id=${tiktokAffiliateID}`;
-    }
-  }
+  // DEMO: Fixed item price for estimated commission calculation
+  const itemPrice = 1000; // Change this to test with other prices
+  const totalCommission = itemPrice * commissionRate;
+  const userShare = totalCommission * 0.5; // 50% share
 
-  convertResult.textContent = "Converted Link: " + converted;
+  convertResult.textContent =
+    `Converted Link: ${converted}\nEstimated Commission: ₱${userShare.toFixed(2)}`;
+
   alert("✅ Link converted successfully!");
 }
 
-// ===== Initialize UI =====
-function updateUI() {
-  cashbackEl.textContent = cashback;
-  withdrawMsg.textContent = "";
-  convertResult.textContent = "";
-
-  // Enable buttons only after login
-  document.querySelector(".add").disabled = loginBtn.style.display !== "none";
-  document.querySelector(".withdraw").disabled = loginBtn.style.display !== "none";
-  document.querySelector(".convert").disabled = loginBtn.style.display !== "none";
-}
-
-// Run at start
-updateUI();
+// ============================
+// INIT
+// ============================
+cashbackEl.textContent = cashback;
