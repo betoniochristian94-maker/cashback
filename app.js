@@ -6,69 +6,39 @@ const withdrawMsg = document.getElementById("withdrawMessage");
 const convertResult = document.getElementById("convertedLink");
 const linkInput = document.getElementById("linkInput");
 const userEl = document.getElementById("user");
+const loginBtn = document.getElementById("loginBtn");
 
-// =======================
-// LOGIN (DEMO LOGIN)
-// =======================
-window.login = function () {
+// Login (demo)
+function login() {
   userEl.textContent = "Welcome Christian Betonio";
-  alert("✅ Login successful!");
-};
-
-// =======================
-// UPDATE UI
-// =======================
-function updateUI() {
-  cashbackEl.textContent = cashback;
-
-  const withdrawBtn = document.querySelector(".withdraw");
-  if (cashback <= 0) {
-    withdrawBtn.disabled = true;
-    withdrawMsg.textContent = "No cashback to withdraw!";
-  } else {
-    withdrawBtn.disabled = false;
-    withdrawMsg.textContent = "";
-  }
+  loginBtn.style.display = "none";
+  alert("Login successful!");
 }
 
-// =======================
-// ADD CASHBACK
-// =======================
-window.addCashback = function () {
+// Add cashback
+function addCashback() {
   cashback += 10;
-  alert("✅ ₱10 cashback added!");
-  updateUI();
-};
+  cashbackEl.textContent = cashback;
+}
 
-// =======================
-// CONVERT LINK
-// =======================
-window.convertLink = function () {
+// Convert link
+function convertLink() {
   const link = linkInput.value.trim();
-
   if (!link) {
-    alert("⚠️ Please paste a shopping link first.");
+    alert("Paste a link first");
     return;
   }
+  convertResult.textContent = link + "?ref=cashbacker";
+}
 
-  const converted = link + "?ref=cashbacker";
-  convertResult.textContent = converted;
-  alert("✅ Link converted!");
-};
-
-// =======================
-// WITHDRAW
-// =======================
-window.withdrawCashback = function () {
+// Withdraw
+function withdrawCashback() {
   if (cashback <= 0) {
-    alert("❌ No cashback to withdraw.");
+    withdrawMsg.textContent = "No cashback to withdraw!";
     return;
   }
-
-  alert("💸 Withdrawal request sent!");
+  alert("Withdrawal requested!");
   cashback = 0;
-  updateUI();
-};
-
-// Init
-updateUI();
+  cashbackEl.textContent = cashback;
+  withdrawMsg.textContent = "";
+}
