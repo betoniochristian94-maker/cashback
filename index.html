@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cashback App</title>
+  <title>Cashbacker</title>
 
-  <!-- Manifest for PWA -->
+  <!-- Manifest para sa PWA -->
   <link rel="manifest" href="manifest.json">
 
-  <!-- CSS -->
+  <!-- Link sa CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -48,10 +48,10 @@
 
   <p class="center small">© 2026 Cashbacker • Demo App</p>
 
-  <!-- JS -->
-  <script type="module" src="app.js"></script>
+  <!-- App JS -->
+  <script src="app.js"></script>
 
-  <!-- Service Worker -->
+  <!-- Optional: Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
@@ -59,5 +59,6 @@
         .catch(err => console.log('SW registration failed', err));
     }
   </script>
+
 </body>
 </html>
