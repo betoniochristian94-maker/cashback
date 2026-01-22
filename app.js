@@ -1,16 +1,6 @@
-// ============================
-// CONFIGURATION
-// ============================
-const shopeeAffiliateID = "YOUR_SHOPEE_AFFILIATE_ID"; // Palitan ng sa'yo
-const tiktokAffiliateID = "YOUR_TIKTOK_AFFILIATE_ID"; // Palitan ng sa'yo
-const commissionRate = 0.05; // Example: 5% base commission
-const userShareRate = 0.5; // 50% share sa user
-
 let cashback = 0;
 
-// ============================
-// ELEMENTS
-// ============================
+// Elements
 const cashbackEl = document.getElementById("cashback");
 const withdrawMsg = document.getElementById("withdrawMessage");
 const convertResult = document.getElementById("convertedLink");
@@ -18,94 +8,56 @@ const linkInput = document.getElementById("linkInput");
 const userEl = document.getElementById("user");
 const loginBtn = document.getElementById("loginBtn");
 
-// ============================
-// LOGIN DEMO
-// ============================
+// Login (demo)
 function login() {
-  userEl.textContent = "Welcome Christian Betonio"; // demo
+  userEl.textContent = "Welcome Christian Betonio";
   loginBtn.style.display = "none";
   alert("Login successful!");
 }
 
-// ============================
-// ADD CASHBACK
-// ============================
+// Add cashback
 function addCashback() {
   cashback += 10;
   cashbackEl.textContent = cashback;
+  alert("✅ ₱10 cashback added!");
 }
 
-// ============================
-// DEMO API: Shopee Item Price
-// ============================
-async function getShopeeItemPrice(itemLink) {
-  // Demo: random price ₱100–₱2000
-  return Math.floor(Math.random() * 1900) + 100;
-}
-
-// ============================
-// DEMO API: TikTok Item Price
-// ============================
-async function getTikTokItemPrice(itemLink) {
-  // Demo: random price ₱50–₱1000
-  return Math.floor(Math.random() * 950) + 50;
-}
-
-// ============================
-// CONVERT LINK
-// ============================
-async function convertLink() {
-  const input = linkInput.value.trim();
-  if (!input) {
-    alert("⚠️ Please paste a Shopee or TikTok link first.");
+// Convert link (Shopee/TikTok demo)
+function convertLink() {
+  const link = linkInput.value.trim();
+  if (!link) {
+    alert("⚠️ Paste a link first");
     return;
   }
 
-  let itemPrice = 0;
-  let converted = input;
+  // Demo affiliate conversion
+  const affiliateShopee = "yourShopeeID";
+  const affiliateTikTok = "yourTikTokID";
 
-  if (input.includes("shopee.ph")) {
-    converted += input.includes("?") ? `&aff_id=${shopeeAffiliateID}` : `?aff_id=${shopeeAffiliateID}`;
-    itemPrice = await getShopeeItemPrice(input);
-  } else if (input.includes("vt.tiktok.com") || input.includes("www.tiktok.com")) {
-    converted += input.includes("?") ? `&aff_id=${tiktokAffiliateID}` : `?aff_id=${tiktokAffiliateID}`;
-    itemPrice = await getTikTokItemPrice(input);
-  } else {
-    alert("⚠️ Only Shopee or TikTok links are supported.");
-    return;
-  }
+  let converted = link;
+  if (link.includes("shopee")) converted += `?aff_id=${affiliateShopee}`;
+  else if (link.includes("tiktok")) converted += `?aff_id=${affiliateTikTok}`;
 
-  const totalCommission = itemPrice * commissionRate;
-  const userShare = totalCommission * userShareRate;
-
-  convertResult.textContent =
-    `Converted Link: ${converted}\nItem Price: ₱${itemPrice}\nEstimated Commission: ₱${userShare.toFixed(2)}`;
-
+  convertResult.textContent = converted;
   alert("✅ Link converted successfully!");
 }
 
-// ============================
-// WITHDRAW
-// ============================
+// Withdraw
 function withdrawCashback() {
   if (cashback <= 0) {
     withdrawMsg.textContent = "No cashback to withdraw!";
     return;
   }
-
-  alert(`💸 Withdrawal request sent! You withdrew ₱${cashback}`);
+  alert(`💸 Withdrawal request sent! Amount: ₱${cashback}`);
   cashback = 0;
   cashbackEl.textContent = cashback;
   withdrawMsg.textContent = "";
 }
 
-// ============================
-// INIT
-// ============================
-function init() {
+// Init UI
+updateUI();
+function updateUI() {
   cashbackEl.textContent = cashback;
-  withdrawMsg.textContent = "";
-  convertResult.textContent = "";
-}
+}}
 
 init();
