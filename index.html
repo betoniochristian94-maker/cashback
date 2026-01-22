@@ -32,7 +32,7 @@
     <!-- Convert Link Card -->
     <div class="card">
       <h3>Convert Shopping Link</h3>
-      <input id="linkInput" placeholder="Paste Shopee / TikTok link">
+      <input id="linkInput" placeholder="Paste Shopee / TikTok / Lazada link">
       <button class="convert" onclick="convertLink()">Convert Link</button>
       <p id="convertedLink" class="small"></p>
     </div>
@@ -48,10 +48,10 @@
 
   <p class="center small">© 2026 Cashbacker • Demo App</p>
 
-  <!-- App JS -->
-  <script src="app.js"></script>
+  <!-- App JS (module dahil Firebase) -->
+  <script type="module" src="app.js"></script>
 
-  <!-- Service Worker -->
+  <!-- Optional: Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
