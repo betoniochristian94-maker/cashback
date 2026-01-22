@@ -32,7 +32,7 @@
     <!-- Convert Link Card -->
     <div class="card">
       <h3>Convert Shopping Link</h3>
-      <input id="linkInput" placeholder="Paste Shopee / TikTok / Lazada link">
+      <input id="linkInput" placeholder="Paste Shopee / TikTok link">
       <button class="convert" onclick="convertLink()">Convert Link</button>
       <p id="convertedLink" class="small"></p>
     </div>
@@ -51,7 +51,7 @@
   <!-- App JS -->
   <script src="app.js"></script>
 
-  <!-- Optional: Service Worker -->
+  <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
