@@ -1,43 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cashbacker</title>
 
-  <!-- Manifest para sa PWA -->
   <link rel="manifest" href="manifest.json">
-
-  <!-- Link sa CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <div class="container">
 
-    <!-- Login Card -->
     <div class="card">
       <h2>💸 Cashbacker</h2>
       <button id="loginBtn" class="login" onclick="login()">Login with Google</button>
       <p id="user" class="center small"></p>
     </div>
 
-    <!-- Cashback Card -->
     <div class="card">
       <h3>Your Cashback</h3>
       <h2 class="center">₱<span id="cashback">0</span></h2>
       <button class="add" onclick="addCashback()">+ ₱10</button>
     </div>
 
-    <!-- Convert Link Card -->
     <div class="card">
       <h3>Convert Shopping Link</h3>
-      <input id="linkInput" placeholder="Paste Shopee / TikTok / Lazada link">
+      <input id="linkInput" placeholder="Paste Shopee / TikTok link">
       <button class="convert" onclick="convertLink()">Convert Link</button>
       <p id="convertedLink" class="small"></p>
     </div>
 
-    <!-- Withdraw Card -->
     <div class="card">
       <h3>Withdraw Cashback</h3>
       <button class="withdraw" onclick="withdrawCashback()">Withdraw</button>
@@ -48,17 +41,12 @@
 
   <p class="center small">© 2026 Cashbacker • Demo App</p>
 
-  <!-- App JS (module dahil Firebase) -->
-  <script type="module" src="app.js"></script>
+  <!-- ✅ Firebase CDN (IMPORTANT) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
-  <!-- Optional: Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(() => console.log('Service Worker registered'))
-        .catch(err => console.log('SW registration failed', err));
-    }
-  </script>
+  <!-- App JS -->
+  <script src="app.js"></script>
 
 </body>
 </html>
