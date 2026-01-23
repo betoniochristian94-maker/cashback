@@ -1,7 +1,7 @@
 // ======================
 // CONFIG
 // ======================
-const SHOPEE_AFF_ID = "13316510024"; // Shopee Affiliate ID mo
+const SHOPEE_AFF_ID = "13316510024"; // Shopee Affiliate ID
 
 // ======================
 // STATE
@@ -31,7 +31,7 @@ function login() {
 // UPDATE UI
 // ======================
 function updateUI() {
-  cashbackEl.textContent = cashback;
+  cashbackEl.textContent = cashback.toFixed(2);
 
   const withdrawBtn = document.querySelector(".withdraw");
   if (cashback <= 0) {
@@ -63,7 +63,7 @@ function convertLink() {
 
   let convertedLink = link;
 
-  // SHOPEE → add affiliate ID
+  // Shopee → add affiliate ID
   if (link.includes("shopee")) {
     if (link.includes("?")) {
       convertedLink = link + `&aff_id=${SHOPEE_AFF_ID}`;
@@ -72,13 +72,23 @@ function convertLink() {
     }
   }
 
-  // TIKTOK → DO NOT MODIFY (auto tracked)
+  // TikTok → do not modify (auto-tracked)
   if (link.includes("tiktok")) {
     convertedLink = link;
   }
 
-  convertResult.textContent = convertedLink;
+  convertResult.value = convertedLink;
   alert("Link converted successfully!");
+}
+
+// ======================
+// COPY LINK
+// ======================
+function copyLink() {
+  convertResult.select();
+  convertResult.setSelectionRange(0, 99999); // For mobile
+  document.execCommand("copy");
+  alert("Copied to clipboard!");
 }
 
 // ======================
@@ -90,7 +100,7 @@ function withdrawCashback() {
     return;
   }
 
-  alert("Withdrawal request sent (demo only).");
+  alert(`Withdrawal request sent (demo only). Amount: ₱${cashback.toFixed(2)}`);
   cashback = 0;
   updateUI();
 }
