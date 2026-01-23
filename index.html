@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cashbacker</title>
-  <link rel="manifest" href="manifest.json">
+  <title>Cashbacker Demo</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,22 +21,24 @@
   <div class="card">
     <h3>Your Cashback</h3>
     <h2 class="center">₱<span id="cashback">0</span></h2>
-    <button class="add" onclick="addCashback()">+ ₱10</button>
+    <button class="add" onclick="addCashback()">+ ₱10 (demo)</button>
   </div>
 
   <!-- Convert Link Card -->
   <div class="card">
     <h3>Convert Shopping Link</h3>
     <input id="linkInput" placeholder="Paste Shopee / TikTok link">
+    <input id="priceInput" placeholder="Enter product price for demo (₱)">
     <button class="convert" onclick="convertLink()">Convert Link</button>
     <input id="convertedLink" class="small" readonly>
     <button onclick="copyLink()">Copy Link</button>
+    <button onclick="simulateOrder()">Order Completed (demo)</button>
   </div>
 
   <!-- Withdraw Card -->
   <div class="card">
     <h3>Withdraw Cashback</h3>
-    <button class="withdraw" onclick="withdrawCashback()">Withdraw</button>
+    <button class="withdraw" onclick="withdrawCashback()">Request Withdraw</button>
     <p id="withdrawMessage" class="small center"></p>
   </div>
 
@@ -45,8 +46,6 @@
 
 <p class="center small">© 2026 Cashbacker • Demo App</p>
 
-<!-- App JS -->
 <script src="app.js"></script>
-
 </body>
 </html>
