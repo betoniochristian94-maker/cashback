@@ -7,7 +7,7 @@ let cashback = 0;
 // ELEMENTS
 const cashbackEl = document.getElementById("cashback");
 const withdrawMsg = document.getElementById("withdrawMessage");
-const convertResult = document.getElementById("convertedLink");
+const convertLinkEl = document.getElementById("convertedLink");
 const linkInput = document.getElementById("linkInput");
 const priceInput = document.getElementById("priceInput");
 const userEl = document.getElementById("user");
@@ -47,26 +47,30 @@ function convertLink() {
     return;
   }
 
-  let convertedLink = link;
+  let converted = link;
 
   // Shopee → add affiliate ID
   if (link.includes("shopee")) {
-    if (link.includes("?")) convertedLink = link + `&aff_id=${SHOPEE_AFF_ID}`;
-    else convertedLink = link + `?aff_id=${SHOPEE_AFF_ID}`;
+    if (link.includes("?")) converted = link + `&aff_id=${SHOPEE_AFF_ID}`;
+    else converted = link + `?aff_id=${SHOPEE_AFF_ID}`;
   }
 
   // TikTok → do not modify
-  if (link.includes("tiktok")) convertedLink = link;
 
-  convertResult.value = convertedLink;
+  convertLinkEl.textContent = converted;
+  convertLinkEl.href = converted; // make it clickable
   alert("Link converted! Ready to buy (demo).");
 }
 
 // COPY LINK
 function copyLink() {
-  convertResult.select();
-  convertResult.setSelectionRange(0, 99999);
+  const tempInput = document.createElement("input");
+  document.body.appendChild(tempInput);
+  tempInput.value = convertLinkEl.href;
+  tempInput.select();
+  tempInput.setSelectionRange(0, 99999);
   document.execCommand("copy");
+  document.body.removeChild(tempInput);
   alert("Copied to clipboard!");
 }
 
@@ -103,6 +107,4 @@ function withdrawCashback() {
 }
 
 // INIT
-updateUI();// INIT
-// ======================
-updateUI();
+updateUI(); 
