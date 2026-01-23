@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cashbacker</title>
 
+  <!-- Manifest for PWA -->
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -12,18 +13,21 @@
 
   <div class="container">
 
+    <!-- Login Card -->
     <div class="card">
       <h2>💸 Cashbacker</h2>
       <button id="loginBtn" class="login" onclick="login()">Login with Google</button>
       <p id="user" class="center small"></p>
     </div>
 
+    <!-- Cashback Card -->
     <div class="card">
       <h3>Your Cashback</h3>
       <h2 class="center">₱<span id="cashback">0</span></h2>
       <button class="add" onclick="addCashback()">+ ₱10</button>
     </div>
 
+    <!-- Convert Link Card -->
     <div class="card">
       <h3>Convert Shopping Link</h3>
       <input id="linkInput" placeholder="Paste Shopee / TikTok link">
@@ -31,6 +35,7 @@
       <p id="convertedLink" class="small"></p>
     </div>
 
+    <!-- Withdraw Card -->
     <div class="card">
       <h3>Withdraw Cashback</h3>
       <button class="withdraw" onclick="withdrawCashback()">Withdraw</button>
@@ -41,7 +46,7 @@
 
   <p class="center small">© 2026 Cashbacker • Demo App</p>
 
-  <!-- ✅ Firebase CDN (IMPORTANT) -->
+  <!-- Firebase CDN (v8, works on GitHub Pages) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
@@ -49,4 +54,4 @@
   <script src="app.js"></script>
 
 </body>
-</html>
+  </html>
