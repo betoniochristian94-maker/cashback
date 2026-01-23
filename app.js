@@ -1,21 +1,16 @@
-// Firebase Config
-const firebaseConfig = {
-  apiKey: "AIzaSyAxSyj6mPU4oWVmRdH_bUTky7j7A8TMWQw",
-  authDomain: "cashbacker-52a60.firebaseapp.com",
-  projectId: "cashbacker-52a60",
-  storageBucket: "cashbacker-52a60.firebasestorage.app",
-  messagingSenderId: "971010772824",
-  appId: "1:971010772824:web:27b1a47eaf460d2f94df2d"
-};
+// ======================
+// CONFIG
+// ======================
+const SHOPEE_AFF_ID = "13316510024"; // Shopee Affiliate ID mo
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-
-// App state
+// ======================
+// STATE
+// ======================
 let cashback = 0;
 
-// Elements
+// ======================
+// ELEMENTS
+// ======================
 const cashbackEl = document.getElementById("cashback");
 const withdrawMsg = document.getElementById("withdrawMessage");
 const convertResult = document.getElementById("convertedLink");
@@ -23,47 +18,84 @@ const linkInput = document.getElementById("linkInput");
 const userEl = document.getElementById("user");
 const loginBtn = document.getElementById("loginBtn");
 
-// LOGIN WITH GOOGLE
+// ======================
+// LOGIN (DEMO)
+// ======================
 function login() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-
-  auth.signInWithPopup(provider)
-    .then((result) => {
-      const user = result.user;
-      userEl.textContent = "Welcome " + user.displayName;
-      loginBtn.style.display = "none";
-      alert("Login successful!");
-    })
-    .catch((error) => {
-      alert(error.message);
-      console.error(error);
-    });
+  userEl.textContent = "Welcome Christian Betonio";
+  loginBtn.style.display = "none";
+  alert("Login successful!");
 }
 
-// Add cashback (demo)
+// ======================
+// UPDATE UI
+// ======================
+function updateUI() {
+  cashbackEl.textContent = cashback;
+
+  const withdrawBtn = document.querySelector(".withdraw");
+  if (cashback <= 0) {
+    withdrawBtn.disabled = true;
+    withdrawMsg.textContent = "No cashback to withdraw!";
+  } else {
+    withdrawBtn.disabled = false;
+    withdrawMsg.textContent = "";
+  }
+}
+
+// ======================
+// ADD CASHBACK (DEMO)
+// ======================
 function addCashback() {
   cashback += 10;
-  cashbackEl.textContent = cashback;
+  updateUI();
 }
 
-// Convert affiliate link (demo)
+// ======================
+// CONVERT LINK
+// ======================
 function convertLink() {
   const link = linkInput.value.trim();
   if (!link) {
-    alert("Paste a link first");
+    alert("Please paste a shopping link first.");
     return;
   }
-  convertResult.textContent = link + "?ref=cashbacker";
+
+  let convertedLink = link;
+
+  // SHOPEE → add affiliate ID
+  if (link.includes("shopee")) {
+    if (link.includes("?")) {
+      convertedLink = link + `&aff_id=${SHOPEE_AFF_ID}`;
+    } else {
+      convertedLink = link + `?aff_id=${SHOPEE_AFF_ID}`;
+    }
+  }
+
+  // TIKTOK → DO NOT MODIFY (auto tracked)
+  if (link.includes("tiktok")) {
+    convertedLink = link;
+  }
+
+  convertResult.textContent = convertedLink;
+  alert("Link converted successfully!");
 }
 
-// Withdraw (demo)
+// ======================
+// WITHDRAW (DEMO)
+// ======================
 function withdrawCashback() {
   if (cashback <= 0) {
-    withdrawMsg.textContent = "No cashback to withdraw!";
+    alert("No cashback to withdraw.");
     return;
   }
-  alert("Withdrawal requested!");
+
+  alert("Withdrawal request sent (demo only).");
   cashback = 0;
-  cashbackEl.textContent = cashback;
-  withdrawMsg.textContent = "";
+  updateUI();
 }
+
+// ======================
+// INIT
+// ======================
+updateUI();
