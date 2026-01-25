@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const SHOPEE_AFFILIATE_LINK = "https://s.shopee.ph/AABBJBucdn";
   const TIKTOK_AFFILIATE_LINK = "https://vt.tiktok.com/PHLCCP7L9B/";
 
-  // 🔑 Firebase config (replace placeholders with your actual project values)
+  // 🔑 Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyAxSyj6mPU4oWVmRdH_bUTky7j7A8TMWQw",
     authDomain: "cashbacker-52a60.firebaseapp.com",
@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // DOM Elements
   const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
   const linkInput = document.getElementById("linkInput");
   const convertBtn = document.getElementById("convertBtn");
   const convertResult = document.getElementById("convertedLink");
@@ -46,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
       currentUser = { id: uid, name: user.displayName, balance:0, clicks:0 };
       userEl.textContent = `Welcome ${user.displayName}`;
       loginBtn.style.display = "none";
+      logoutBtn.style.display = "inline-block";
 
       db.collection("users").doc(uid).get().then(doc => {
         if(doc.exists) currentUser = doc.data();
@@ -53,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } else {
       loginBtn.style.display = "block";
+      logoutBtn.style.display = "none";
       currentUser = null;
       updateDashboard();
     }
@@ -64,6 +67,20 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch(err => {
         console.error(err);
         alert("Login failed");
+      });
+  });
+
+  // 🔹 Google logout
+  logoutBtn.addEventListener("click", () => {
+    auth.signOut()
+      .then(() => {
+        alert("You have been signed out");
+        currentUser = null;
+        updateDashboard();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Sign out failed");
       });
   });
 
@@ -80,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
     else { alert("Only Shopee or TikTok links supported"); return; }
 
     currentUser.clicks += 1;
-    currentUser.balance += 10; // demo points, change per logic
+    currentUser.balance += 10; // demo points
     updateDashboard();
 
     // Save to Firebase
