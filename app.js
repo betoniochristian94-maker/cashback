@@ -2,6 +2,21 @@
 const SHOPEE_AFFILIATE_LINK = "https://s.shopee.ph/AABBJBucdn";
 const TIKTOK_AFFILIATE_LINK = "https://vt.tiktok.com/PHLCCP7L9B/";
 
+// ===== FIREBASE SETUP =====
+// Replace with your Firebase config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+const provider = new firebase.auth.GoogleAuthProvider();
+
 // ===== ELEMENTS =====
 const linkInput = document.getElementById("linkInput");
 const convertResult = document.getElementById("convertedLink");
@@ -9,77 +24,94 @@ const cashbackEl = document.getElementById("cashback");
 const withdrawMsg = document.getElementById("withdrawMessage");
 const userEl = document.getElementById("user");
 const loginBtn = document.getElementById("loginBtn");
+const clicksEl = document.getElementById("clicks");
 
-// ===== LOGIN (DEMO) =====
+// ===== CURRENT USER =====
+let currentUser = null;
+
+// ===== GOOGLE LOGIN =====
 function login() {
-  userEl.textContent = "Welcome Christian Betonio";
-  loginBtn.style.display = "none";
-  alert("Login successful!");
+  auth.signInWithPopup(provider)
+    .then((result) => {
+      currentUser = {
+        id: result.user.uid,
+        name: result.user.displayName,
+        balance: 0,
+        clicks: 0
+      };
+      userEl.textContent = `Welcome ${currentUser.name}`;
+      loginBtn.style.display = "none";
+
+      // Load user data from Firebase if exists
+      db.collection("users").doc(currentUser.id).get().then(doc => {
+        if (doc.exists) {
+          currentUser = doc.data();
+          updateDashboard();
+        }
+      });
+
+      alert("Login successful!");
+    })
+    .catch((error) => {
+      console.error(error);
+      alert("Login failed. Try again.");
+    });
 }
 
-// ===== AUTO-DETECT & CONVERT =====
+// ===== UPDATE DASHBOARD =====
+function updateDashboard() {
+  cashbackEl.textContent = currentUser.balance;
+  clicksEl.textContent = currentUser.clicks;
+}
+
+// ===== CONVERT LINK & TRACK CLICK =====
 function convertLink() {
+  if (!currentUser) { alert("Please login first"); return; }
+
   const link = linkInput.value.trim().toLowerCase();
+  if (!link) { alert("Paste a Shopee or TikTok link"); return; }
 
-  if (!link) {
-    alert("Paste a Shopee or TikTok link");
-    return;
-  }
-
-  // SHOPEE
+  let converted = "";
   if (link.includes("shopee")) {
-    convertResult.innerHTML = `
-      <a href="${SHOPEE_AFFILIATE_LINK}" target="_blank"
-        style="display:block;font-weight:bold;word-break:break-all;">
-        👉 Open Shopee (Affiliate Link)
-      </a>
-      <p class="small">
-        Make sure to checkout after clicking this link to ensure commission tracking.
-      </p>
-    `;
+    converted = SHOPEE_AFFILIATE_LINK;
+  } else if (link.includes("tiktok")) {
+    converted = TIKTOK_AFFILIATE_LINK;
+  } else {
+    alert("Only Shopee or TikTok links are supported");
     return;
   }
 
-  // TIKTOK
-  if (link.includes("tiktok")) {
-    convertResult.innerHTML = `
-      <a href="${TIKTOK_AFFILIATE_LINK}" target="_blank"
-        style="display:block;font-weight:bold;word-break:break-all;">
-        👉 Open TikTok Shop (Affiliate Link)
-      </a>
-      <p class="small">
-        Purchases made after clicking this link will be tracked to the affiliate.
-      </p>
-    `;
-    return;
-  }
+  // Increment click in memory & Firebase
+  currentUser.clicks += 1;
+  currentUser.balance += 10; // demo points, optional
+  updateDashboard();
 
-  // INVALID
-  alert("Only Shopee or TikTok links are supported.");
+  db.collection("users").doc(currentUser.id).set(currentUser)
+    .then(() => console.log("Click recorded in Firebase"))
+    .catch(err => console.error(err));
+
+  // Display converted link
+  convertResult.innerHTML = `
+    <a href="${converted}" target="_blank" style="display:block;font-weight:bold;word-break:break-all;">
+      👉 Open Affiliate Link
+    </a>
+    <p class="small">
+      Make sure to checkout after clicking this link to ensure commission tracking.
+    </p>
+  `;
 }
 
-// ===== DEMO CASHBACK =====
-let cashback = 0;
-function addCashback() {
-  cashback += 10;
-  cashbackEl.textContent = cashback;
-}
-
-// ===== WITHDRAW (ADMIN AUTH) =====
+// ===== WITHDRAW REQUEST =====
 function withdrawCashback() {
-  if (cashback <= 0) {
-    withdrawMsg.textContent = "No cashback to withdraw.";
-    return;
-  }
+  if (!currentUser) { alert("Please login first"); return; }
+  if (currentUser.balance <= 0) { withdrawMsg.textContent = "No balance to withdraw."; return; }
 
-  const code = prompt("Enter authorization code:");
-  if (code !== "1234") {
-    alert("Authorization failed");
-    return;
-  }
+  const code = prompt("Enter admin authorization code:");
+  if (code !== "1234") { alert("Authorization failed"); return; }
 
-  alert("Withdraw request approved (demo)");
-  cashback = 0;
-  cashbackEl.textContent = cashback;
+  alert("Withdraw approved (demo)");
+  currentUser.balance = 0;
+  updateDashboard();
   withdrawMsg.textContent = "Withdraw approved.";
-}
+  db.collection("users").doc(currentUser.id).set(currentUser);
+                                                 }
