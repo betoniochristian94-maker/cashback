@@ -1,115 +1,121 @@
-// ===== OFFICIAL AFFILIATE LINKS =====
-const SHOPEE_AFFILIATE_LINK = "https://s.shopee.ph/AABBJBucdn";
-const TIKTOK_AFFILIATE_LINK = "https://vt.tiktok.com/PHLCCP7L9B/";
+document.addEventListener("DOMContentLoaded", () => {
 
-// ===== FIREBASE SETUP =====
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
-const provider = new firebase.auth.GoogleAuthProvider();
+  // ===== OFFICIAL AFFILIATE LINKS =====
+  const SHOPEE_AFFILIATE_LINK = "https://s.shopee.ph/AABBJBucdn";
+  const TIKTOK_AFFILIATE_LINK = "https://vt.tiktok.com/PHLCCP7L9B/";
 
-// ===== ELEMENTS =====
-const loginBtn = document.getElementById("loginBtn");
-const linkInput = document.getElementById("linkInput");
-const convertBtn = document.getElementById("convertBtn");
-const convertResult = document.getElementById("convertedLink");
-const cashbackEl = document.getElementById("cashback");
-const withdrawBtn = document.getElementById("withdrawBtn");
-const withdrawMsg = document.getElementById("withdrawMessage");
-const userEl = document.getElementById("user");
-const clicksEl = document.getElementById("clicks");
+  // ===== FIREBASE SETUP =====
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+  const provider = new firebase.auth.GoogleAuthProvider();
 
-// ===== CURRENT USER =====
-let currentUser = null;
+  // ===== ELEMENTS =====
+  const loginBtn = document.getElementById("loginBtn");
+  const linkInput = document.getElementById("linkInput");
+  const convertBtn = document.getElementById("convertBtn");
+  const convertResult = document.getElementById("convertedLink");
+  const cashbackEl = document.getElementById("cashback");
+  const withdrawBtn = document.getElementById("withdrawBtn");
+  const withdrawMsg = document.getElementById("withdrawMessage");
+  const userEl = document.getElementById("user");
+  const clicksEl = document.getElementById("clicks");
 
-// ===== FUNCTIONS =====
-function updateDashboard() {
-  cashbackEl.textContent = currentUser.balance;
-  clicksEl.textContent = currentUser.clicks;
-}
+  // ===== CURRENT USER =====
+  let currentUser = null;
 
-// ===== GOOGLE LOGIN =====
-loginBtn.addEventListener("click", () => {
-  auth.signInWithPopup(provider)
-    .then((result) => {
-      currentUser = {
-        id: result.user.uid,
-        name: result.user.displayName,
-        balance: 0,
-        clicks: 0
-      };
-      userEl.textContent = `Welcome ${currentUser.name}`;
-      loginBtn.style.display = "none";
+  // ===== FUNCTIONS =====
+  function updateDashboard() {
+    cashbackEl.textContent = currentUser.balance;
+    clicksEl.textContent = currentUser.clicks;
+  }
 
-      // Load user data from Firebase if exists
-      db.collection("users").doc(currentUser.id).get().then(doc => {
-        if (doc.exists) {
-          currentUser = doc.data();
-          updateDashboard();
-        }
+  function loginFunction() {
+    auth.signInWithPopup(provider)
+      .then((result) => {
+        currentUser = {
+          id: result.user.uid,
+          name: result.user.displayName,
+          balance: 0,
+          clicks: 0
+        };
+        userEl.textContent = `Welcome ${currentUser.name}`;
+        loginBtn.style.display = "none";
+
+        // Load user data from Firebase if exists
+        db.collection("users").doc(currentUser.id).get().then(doc => {
+          if (doc.exists) {
+            currentUser = doc.data();
+            updateDashboard();
+          }
+        });
+
+        alert("Login successful!");
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Login failed. Try again.");
       });
+  }
 
-      alert("Login successful!");
-    })
-    .catch((error) => {
-      console.error(error);
-      alert("Login failed. Try again.");
-    });
-});
+  function convertFunction() {
+    if (!currentUser) { alert("Please login first"); return; }
 
-// ===== CONVERT LINK =====
-convertBtn.addEventListener("click", () => {
-  if (!currentUser) { alert("Please login first"); return; }
+    const link = linkInput.value.trim().toLowerCase();
+    if (!link) { alert("Paste a Shopee or TikTok link"); return; }
 
-  const link = linkInput.value.trim().toLowerCase();
-  if (!link) { alert("Paste a Shopee or TikTok link"); return; }
+    let converted = "";
+    if (link.includes("shopee")) converted = SHOPEE_AFFILIATE_LINK;
+    else if (link.includes("tiktok")) converted = TIKTOK_AFFILIATE_LINK;
+    else { alert("Only Shopee or TikTok links are supported"); return; }
 
-  let converted = "";
-  if (link.includes("shopee")) converted = SHOPEE_AFFILIATE_LINK;
-  else if (link.includes("tiktok")) converted = TIKTOK_AFFILIATE_LINK;
-  else { alert("Only Shopee or TikTok links are supported"); return; }
+    // Increment clicks & balance
+    currentUser.clicks += 1;
+    currentUser.balance += 10; // demo balance points
+    updateDashboard();
 
-  // Increment clicks & balance
-  currentUser.clicks += 1;
-  currentUser.balance += 10; // demo balance points
-  updateDashboard();
+    // Save to Firebase
+    db.collection("users").doc(currentUser.id).set(currentUser)
+      .then(() => console.log("Click recorded in Firebase"))
+      .catch(err => console.error(err));
 
-  // Save to Firebase
-  db.collection("users").doc(currentUser.id).set(currentUser)
-    .then(() => console.log("Click recorded in Firebase"))
-    .catch(err => console.error(err));
+    // Show converted link
+    convertResult.innerHTML = `
+      <a href="${converted}" target="_blank" style="display:block;font-weight:bold;word-break:break-all;">
+        👉 Open Affiliate Link
+      </a>
+      <p class="small">
+        Make sure to checkout after clicking this link to ensure commission tracking.
+      </p>
+    `;
+  }
 
-  // Show converted link
-  convertResult.innerHTML = `
-    <a href="${converted}" target="_blank" style="display:block;font-weight:bold;word-break:break-all;">
-      👉 Open Affiliate Link
-    </a>
-    <p class="small">
-      Make sure to checkout after clicking this link to ensure commission tracking.
-    </p>
-  `;
-});
+  function withdrawFunction() {
+    if (!currentUser) { alert("Please login first"); return; }
+    if (currentUser.balance <= 0) { withdrawMsg.textContent = "No balance to withdraw."; return; }
 
-// ===== WITHDRAW =====
-withdrawBtn.addEventListener("click", () => {
-  if (!currentUser) { alert("Please login first"); return; }
-  if (currentUser.balance <= 0) { withdrawMsg.textContent = "No balance to withdraw."; return; }
+    const code = prompt("Enter admin authorization code:");
+    if (code !== "1234") { alert("Authorization failed"); return; }
 
-  const code = prompt("Enter admin authorization code:");
-  if (code !== "1234") { alert("Authorization failed"); return; }
+    alert("Withdraw approved (demo)");
+    currentUser.balance = 0;
+    updateDashboard();
+    withdrawMsg.textContent = "Withdraw approved.";
 
-  alert("Withdraw approved (demo)");
-  currentUser.balance = 0;
-  updateDashboard();
-  withdrawMsg.textContent = "Withdraw approved.";
+    db.collection("users").doc(currentUser.id).set(currentUser);
+  }
 
-  db.collection("users").doc(currentUser.id).set(currentUser);
+  // ===== ATTACH EVENT LISTENERS =====
+  loginBtn.addEventListener("click", loginFunction);
+  convertBtn.addEventListener("click", convertFunction);
+  withdrawBtn.addEventListener("click", withdrawFunction);
+
 });
