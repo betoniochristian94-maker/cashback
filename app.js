@@ -1,72 +1,70 @@
-// ======================
-// STATE
-// ======================
-let cashback = 0;
+// ===== OFFICIAL AFFILIATE LINKS =====
+const SHOPEE_AFFILIATE_LINK = "https://s.shopee.ph/AABBJBucdn";
 
-// ======================
-// ELEMENTS
-// ======================
+// ===== ELEMENTS =====
+const linkInput = document.getElementById("linkInput");
+const convertResult = document.getElementById("convertedLink");
 const cashbackEl = document.getElementById("cashback");
 const withdrawMsg = document.getElementById("withdrawMessage");
-const convertResult = document.getElementById("convertedLink");
-const linkInput = document.getElementById("linkInput");
 const userEl = document.getElementById("user");
 const loginBtn = document.getElementById("loginBtn");
 
-// ======================
-// LOGIN (DEMO)
-// ======================
-window.login = function () {
+// ===== DEMO LOGIN =====
+function login() {
   userEl.textContent = "Welcome Christian Betonio";
   loginBtn.style.display = "none";
   alert("Login successful!");
-};
+}
 
-// ======================
-// ADD CASHBACK
-// ======================
-window.addCashback = function () {
-  cashback += 10;
-  cashbackEl.textContent = cashback;
-};
-
-// ======================
-// CONVERT LINK
-// ======================
-window.convertLink = function () {
+// ===== CONVERT LINK (REAL AFFILIATE REDIRECT) =====
+function convertLink() {
   const link = linkInput.value.trim();
 
   if (!link) {
-    alert("Paste a link first");
+    alert("Paste a Shopee product link");
     return;
   }
 
-  const converted = link + "?ref=affiliate_demo";
+  if (!link.includes("shopee")) {
+    alert("Shopee links only for now");
+    return;
+  }
 
   convertResult.innerHTML = `
-    <a href="${converted}" target="_blank">${converted}</a>
+    <a href="${SHOPEE_AFFILIATE_LINK}" 
+       target="_blank" 
+       style="word-break: break-all; font-weight: bold;">
+       👉 Open Shopee via Affiliate Link
+    </a>
+    <p class="small">
+      Purchases made after clicking this link will be tracked in the Shopee Affiliate Dashboard.
+    </p>
   `;
+}
 
-  alert("Link converted!");
-};
+// ===== DEMO CASHBACK (MANUAL) =====
+let cashback = 0;
 
-// ======================
-// WITHDRAW
-// ======================
-window.withdrawCashback = function () {
+function addCashback() {
+  cashback += 10;
+  cashbackEl.textContent = cashback;
+}
+
+// ===== WITHDRAW (ADMIN AUTHORIZATION) =====
+function withdrawCashback() {
   if (cashback <= 0) {
-    withdrawMsg.textContent = "No cashback to withdraw!";
+    withdrawMsg.textContent = "No cashback to withdraw.";
     return;
   }
 
-  const auth = prompt("Enter authorization code:");
-  if (auth !== "1234") {
+  const code = prompt("Enter authorization code:");
+  if (code !== "1234") {
     alert("Authorization failed");
     return;
   }
 
-  alert("Withdraw approved!");
+  alert("Withdraw request approved (demo)");
   cashback = 0;
   cashbackEl.textContent = cashback;
-  withdrawMsg.textContent = "";
-};
+  withdrawMsg.textContent = "Withdraw approved.";
+}
