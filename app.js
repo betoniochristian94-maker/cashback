@@ -1,21 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  // 🛒 Affiliate links
   const SHOPEE_AFFILIATE_LINK = "https://s.shopee.ph/AABBJBucdn";
   const TIKTOK_AFFILIATE_LINK = "https://vt.tiktok.com/PHLCCP7L9B/";
 
+  // 🔑 Firebase config (replace placeholders with your actual project values)
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_BUCKET",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyAxSyj6mPU4oWVmRdH_bUTky7j7A8TMWQw",
+    authDomain: "cashbacker-52a60.firebaseapp.com",
+    projectId: "cashbacker-52a60",
+    storageBucket: "cashbacker-52a60.appspot.com",
+    messagingSenderId: "971010772824",
+    appId: "1:971010772824:web:27b1a47eaf460d2f94df2d"
   };
+
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   const auth = firebase.auth();
   const provider = new firebase.auth.GoogleAuthProvider();
 
+  // DOM Elements
   const loginBtn = document.getElementById("loginBtn");
   const linkInput = document.getElementById("linkInput");
   const convertBtn = document.getElementById("convertBtn");
@@ -28,12 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentUser = null;
 
+  // 🔹 Update Dashboard
   function updateDashboard() {
     cashbackEl.textContent = currentUser ? currentUser.balance : 0;
     clicksEl.textContent = currentUser ? currentUser.clicks : 0;
   }
 
-  // Persistent login
+  // 🔹 Persistent login
   auth.onAuthStateChanged(user => {
     if(user) {
       const uid = user.uid;
@@ -52,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Google login
+  // 🔹 Google login
   loginBtn.addEventListener("click", () => {
     auth.signInWithPopup(provider)
       .catch(err => {
@@ -61,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
-  // Convert link
+  // 🔹 Convert affiliate link
   convertBtn.addEventListener("click", () => {
     if(!currentUser){ alert("Please login first"); return; }
 
@@ -74,13 +80,15 @@ document.addEventListener("DOMContentLoaded", () => {
     else { alert("Only Shopee or TikTok links supported"); return; }
 
     currentUser.clicks += 1;
-    currentUser.balance += 10; // demo points
+    currentUser.balance += 10; // demo points, change per logic
     updateDashboard();
 
+    // Save to Firebase
     db.collection("users").doc(currentUser.id).set(currentUser)
       .then(() => console.log("Click recorded in Firebase"))
       .catch(err => console.error(err));
 
+    // Show converted link
     convertResult.innerHTML = `
       <a href="${converted}" target="_blank" style="display:block;font-weight:bold;word-break:break-all;">
         👉 Open Affiliate Link
@@ -91,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   });
 
-  // Withdraw
+  // 🔹 Withdraw request (demo)
   withdrawBtn.addEventListener("click", () => {
     if(!currentUser){ alert("Please login first"); return; }
     if(currentUser.balance <= 0){ withdrawMsg.textContent = "No balance"; return; }
