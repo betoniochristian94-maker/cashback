@@ -32,54 +32,71 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===== CURRENT USER =====
   let currentUser = null;
 
-  // ===== FUNCTIONS =====
+  // ===== UPDATE DASHBOARD =====
   function updateDashboard() {
-    cashbackEl.textContent = currentUser.balance;
-    clicksEl.textContent = currentUser.clicks;
+    cashbackEl.textContent = currentUser ? currentUser.balance : 0;
+    clicksEl.textContent = currentUser ? currentUser.clicks : 0;
   }
 
-  function loginFunction() {
+  // ===== GOOGLE LOGIN =====
+  loginBtn.addEventListener("click", () => {
     auth.signInWithPopup(provider)
       .then((result) => {
-        currentUser = {
-          id: result.user.uid,
-          name: result.user.displayName,
-          balance: 0,
-          clicks: 0
-        };
-        userEl.textContent = `Welcome ${currentUser.name}`;
+        const uid = result.user.uid;
+        currentUser = { id: uid, name: result.user.displayName, balance:0, clicks:0 };
+        userEl.textContent = `Welcome ${result.user.displayName}`;
         loginBtn.style.display = "none";
 
-        // Load user data from Firebase if exists
-        db.collection("users").doc(currentUser.id).get().then(doc => {
-          if (doc.exists) {
+        // Load user data from Firestore
+        db.collection("users").doc(uid).get().then(doc => {
+          if(doc.exists) {
             currentUser = doc.data();
-            updateDashboard();
           }
+          updateDashboard();
         });
 
         alert("Login successful!");
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(err => {
+        console.error(err);
         alert("Login failed. Try again.");
       });
-  }
+  });
 
-  function convertFunction() {
-    if (!currentUser) { alert("Please login first"); return; }
+  // ===== PERSISTENT LOGIN =====
+  auth.onAuthStateChanged(user => {
+    if(user) {
+      const uid = user.uid;
+      currentUser = { id: uid, name: user.displayName, balance:0, clicks:0 };
+      userEl.textContent = `Welcome ${user.displayName}`;
+      loginBtn.style.display = "none";
+
+      db.collection("users").doc(uid).get().then(doc => {
+        if(doc.exists) currentUser = doc.data();
+        updateDashboard();
+      });
+    } else {
+      loginBtn.style.display = "block";
+      currentUser = null;
+      updateDashboard();
+    }
+  });
+
+  // ===== CONVERT LINK =====
+  convertBtn.addEventListener("click", () => {
+    if(!currentUser){ alert("Please login first"); return; }
 
     const link = linkInput.value.trim().toLowerCase();
-    if (!link) { alert("Paste a Shopee or TikTok link"); return; }
+    if(!link){ alert("Paste a Shopee or TikTok link"); return; }
 
     let converted = "";
-    if (link.includes("shopee")) converted = SHOPEE_AFFILIATE_LINK;
-    else if (link.includes("tiktok")) converted = TIKTOK_AFFILIATE_LINK;
+    if(link.includes("shopee")) converted = SHOPEE_AFFILIATE_LINK;
+    else if(link.includes("tiktok")) converted = TIKTOK_AFFILIATE_LINK;
     else { alert("Only Shopee or TikTok links are supported"); return; }
 
     // Increment clicks & balance
     currentUser.clicks += 1;
-    currentUser.balance += 10; // demo balance points
+    currentUser.balance += 10; // demo points
     updateDashboard();
 
     // Save to Firebase
@@ -87,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(() => console.log("Click recorded in Firebase"))
       .catch(err => console.error(err));
 
-    // Show converted link
+    // Display converted link
     convertResult.innerHTML = `
       <a href="${converted}" target="_blank" style="display:block;font-weight:bold;word-break:break-all;">
         👉 Open Affiliate Link
@@ -96,14 +113,15 @@ document.addEventListener("DOMContentLoaded", () => {
         Make sure to checkout after clicking this link to ensure commission tracking.
       </p>
     `;
-  }
+  });
 
-  function withdrawFunction() {
-    if (!currentUser) { alert("Please login first"); return; }
-    if (currentUser.balance <= 0) { withdrawMsg.textContent = "No balance to withdraw."; return; }
+  // ===== WITHDRAW =====
+  withdrawBtn.addEventListener("click", () => {
+    if(!currentUser){ alert("Please login first"); return; }
+    if(currentUser.balance <= 0){ withdrawMsg.textContent = "No balance to withdraw."; return; }
 
     const code = prompt("Enter admin authorization code:");
-    if (code !== "1234") { alert("Authorization failed"); return; }
+    if(code !== "1234"){ alert("Authorization failed"); return; }
 
     alert("Withdraw approved (demo)");
     currentUser.balance = 0;
@@ -111,11 +129,9 @@ document.addEventListener("DOMContentLoaded", () => {
     withdrawMsg.textContent = "Withdraw approved.";
 
     db.collection("users").doc(currentUser.id).set(currentUser);
-  }
+  });
 
-  // ===== ATTACH EVENT LISTENERS =====
-  loginBtn.addEventListener("click", loginFunction);
-  convertBtn.addEventListener("click", convertFunction);
-  withdrawBtn.addEventListener("click", withdrawFunction);
+  // INITIAL DASHBOARD
+  updateDashboard();
 
 });
