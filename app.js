@@ -3,7 +3,6 @@ const SHOPEE_AFFILIATE_LINK = "https://s.shopee.ph/AABBJBucdn";
 const TIKTOK_AFFILIATE_LINK = "https://vt.tiktok.com/PHLCCP7L9B/";
 
 // ===== FIREBASE SETUP =====
-// Replace with your Firebase config
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_AUTH_DOMAIN",
@@ -18,19 +17,27 @@ const auth = firebase.auth();
 const provider = new firebase.auth.GoogleAuthProvider();
 
 // ===== ELEMENTS =====
+const loginBtn = document.getElementById("loginBtn");
 const linkInput = document.getElementById("linkInput");
+const convertBtn = document.getElementById("convertBtn");
 const convertResult = document.getElementById("convertedLink");
 const cashbackEl = document.getElementById("cashback");
+const withdrawBtn = document.getElementById("withdrawBtn");
 const withdrawMsg = document.getElementById("withdrawMessage");
 const userEl = document.getElementById("user");
-const loginBtn = document.getElementById("loginBtn");
 const clicksEl = document.getElementById("clicks");
 
 // ===== CURRENT USER =====
 let currentUser = null;
 
+// ===== FUNCTIONS =====
+function updateDashboard() {
+  cashbackEl.textContent = currentUser.balance;
+  clicksEl.textContent = currentUser.clicks;
+}
+
 // ===== GOOGLE LOGIN =====
-function login() {
+loginBtn.addEventListener("click", () => {
   auth.signInWithPopup(provider)
     .then((result) => {
       currentUser = {
@@ -56,41 +63,31 @@ function login() {
       console.error(error);
       alert("Login failed. Try again.");
     });
-}
+});
 
-// ===== UPDATE DASHBOARD =====
-function updateDashboard() {
-  cashbackEl.textContent = currentUser.balance;
-  clicksEl.textContent = currentUser.clicks;
-}
-
-// ===== CONVERT LINK & TRACK CLICK =====
-function convertLink() {
+// ===== CONVERT LINK =====
+convertBtn.addEventListener("click", () => {
   if (!currentUser) { alert("Please login first"); return; }
 
   const link = linkInput.value.trim().toLowerCase();
   if (!link) { alert("Paste a Shopee or TikTok link"); return; }
 
   let converted = "";
-  if (link.includes("shopee")) {
-    converted = SHOPEE_AFFILIATE_LINK;
-  } else if (link.includes("tiktok")) {
-    converted = TIKTOK_AFFILIATE_LINK;
-  } else {
-    alert("Only Shopee or TikTok links are supported");
-    return;
-  }
+  if (link.includes("shopee")) converted = SHOPEE_AFFILIATE_LINK;
+  else if (link.includes("tiktok")) converted = TIKTOK_AFFILIATE_LINK;
+  else { alert("Only Shopee or TikTok links are supported"); return; }
 
-  // Increment click in memory & Firebase
+  // Increment clicks & balance
   currentUser.clicks += 1;
-  currentUser.balance += 10; // demo points, optional
+  currentUser.balance += 10; // demo balance points
   updateDashboard();
 
+  // Save to Firebase
   db.collection("users").doc(currentUser.id).set(currentUser)
     .then(() => console.log("Click recorded in Firebase"))
     .catch(err => console.error(err));
 
-  // Display converted link
+  // Show converted link
   convertResult.innerHTML = `
     <a href="${converted}" target="_blank" style="display:block;font-weight:bold;word-break:break-all;">
       👉 Open Affiliate Link
@@ -99,10 +96,10 @@ function convertLink() {
       Make sure to checkout after clicking this link to ensure commission tracking.
     </p>
   `;
-}
+});
 
-// ===== WITHDRAW REQUEST =====
-function withdrawCashback() {
+// ===== WITHDRAW =====
+withdrawBtn.addEventListener("click", () => {
   if (!currentUser) { alert("Please login first"); return; }
   if (currentUser.balance <= 0) { withdrawMsg.textContent = "No balance to withdraw."; return; }
 
@@ -113,5 +110,6 @@ function withdrawCashback() {
   currentUser.balance = 0;
   updateDashboard();
   withdrawMsg.textContent = "Withdraw approved.";
+
   db.collection("users").doc(currentUser.id).set(currentUser);
-                                                 }
+});
