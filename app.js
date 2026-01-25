@@ -1,5 +1,6 @@
 // ===== OFFICIAL AFFILIATE LINKS =====
 const SHOPEE_AFFILIATE_LINK = "https://s.shopee.ph/AABBJBucdn";
+const TIKTOK_AFFILIATE_LINK = "https://vt.tiktok.com/PHLCCP7L9B/";
 
 // ===== ELEMENTS =====
 const linkInput = document.getElementById("linkInput");
@@ -9,48 +10,62 @@ const withdrawMsg = document.getElementById("withdrawMessage");
 const userEl = document.getElementById("user");
 const loginBtn = document.getElementById("loginBtn");
 
-// ===== DEMO LOGIN =====
+// ===== LOGIN (DEMO) =====
 function login() {
   userEl.textContent = "Welcome Christian Betonio";
   loginBtn.style.display = "none";
   alert("Login successful!");
 }
 
-// ===== CONVERT LINK (REAL AFFILIATE REDIRECT) =====
+// ===== AUTO-DETECT & CONVERT =====
 function convertLink() {
-  const link = linkInput.value.trim();
+  const link = linkInput.value.trim().toLowerCase();
 
   if (!link) {
-    alert("Paste a Shopee product link");
+    alert("Paste a Shopee or TikTok link");
     return;
   }
 
-  if (!link.includes("shopee")) {
-    alert("Shopee links only for now");
+  // SHOPEE
+  if (link.includes("shopee")) {
+    convertResult.innerHTML = `
+      <a href="${SHOPEE_AFFILIATE_LINK}" target="_blank"
+        style="display:block;font-weight:bold;word-break:break-all;">
+        👉 Open Shopee (Affiliate Link)
+      </a>
+      <p class="small">
+        Make sure to checkout after clicking this link to ensure commission tracking.
+      </p>
+    `;
     return;
   }
 
-  convertResult.innerHTML = `
-    <a href="${SHOPEE_AFFILIATE_LINK}" 
-       target="_blank" 
-       style="word-break: break-all; font-weight: bold;">
-       👉 Open Shopee via Affiliate Link
-    </a>
-    <p class="small">
-      Purchases made after clicking this link will be tracked in the Shopee Affiliate Dashboard.
-    </p>
-  `;
+  // TIKTOK
+  if (link.includes("tiktok")) {
+    convertResult.innerHTML = `
+      <a href="${TIKTOK_AFFILIATE_LINK}" target="_blank"
+        style="display:block;font-weight:bold;word-break:break-all;">
+        👉 Open TikTok Shop (Affiliate Link)
+      </a>
+      <p class="small">
+        Purchases made after clicking this link will be tracked to the affiliate.
+      </p>
+    `;
+    return;
+  }
+
+  // INVALID
+  alert("Only Shopee or TikTok links are supported.");
 }
 
-// ===== DEMO CASHBACK (MANUAL) =====
+// ===== DEMO CASHBACK =====
 let cashback = 0;
-
 function addCashback() {
   cashback += 10;
   cashbackEl.textContent = cashback;
 }
 
-// ===== WITHDRAW (ADMIN AUTHORIZATION) =====
+// ===== WITHDRAW (ADMIN AUTH) =====
 function withdrawCashback() {
   if (cashback <= 0) {
     withdrawMsg.textContent = "No cashback to withdraw.";
