@@ -1,10 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ===== OFFICIAL AFFILIATE LINKS =====
   const SHOPEE_AFFILIATE_LINK = "https://s.shopee.ph/AABBJBucdn";
   const TIKTOK_AFFILIATE_LINK = "https://vt.tiktok.com/PHLCCP7L9B/";
 
-  // ===== FIREBASE SETUP =====
   const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_AUTH_DOMAIN",
@@ -18,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const auth = firebase.auth();
   const provider = new firebase.auth.GoogleAuthProvider();
 
-  // ===== ELEMENTS =====
   const loginBtn = document.getElementById("loginBtn");
   const linkInput = document.getElementById("linkInput");
   const convertBtn = document.getElementById("convertBtn");
@@ -29,41 +26,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const userEl = document.getElementById("user");
   const clicksEl = document.getElementById("clicks");
 
-  // ===== CURRENT USER =====
   let currentUser = null;
 
-  // ===== UPDATE DASHBOARD =====
   function updateDashboard() {
     cashbackEl.textContent = currentUser ? currentUser.balance : 0;
     clicksEl.textContent = currentUser ? currentUser.clicks : 0;
   }
 
-  // ===== GOOGLE LOGIN =====
-  loginBtn.addEventListener("click", () => {
-    auth.signInWithPopup(provider)
-      .then((result) => {
-        const uid = result.user.uid;
-        currentUser = { id: uid, name: result.user.displayName, balance:0, clicks:0 };
-        userEl.textContent = `Welcome ${result.user.displayName}`;
-        loginBtn.style.display = "none";
-
-        // Load user data from Firestore
-        db.collection("users").doc(uid).get().then(doc => {
-          if(doc.exists) {
-            currentUser = doc.data();
-          }
-          updateDashboard();
-        });
-
-        alert("Login successful!");
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Login failed. Try again.");
-      });
-  });
-
-  // ===== PERSISTENT LOGIN =====
+  // Persistent login
   auth.onAuthStateChanged(user => {
     if(user) {
       const uid = user.uid;
@@ -82,7 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ===== CONVERT LINK =====
+  // Google login
+  loginBtn.addEventListener("click", () => {
+    auth.signInWithPopup(provider)
+      .catch(err => {
+        console.error(err);
+        alert("Login failed");
+      });
+  });
+
+  // Convert link
   convertBtn.addEventListener("click", () => {
     if(!currentUser){ alert("Please login first"); return; }
 
@@ -92,46 +71,42 @@ document.addEventListener("DOMContentLoaded", () => {
     let converted = "";
     if(link.includes("shopee")) converted = SHOPEE_AFFILIATE_LINK;
     else if(link.includes("tiktok")) converted = TIKTOK_AFFILIATE_LINK;
-    else { alert("Only Shopee or TikTok links are supported"); return; }
+    else { alert("Only Shopee or TikTok links supported"); return; }
 
-    // Increment clicks & balance
     currentUser.clicks += 1;
     currentUser.balance += 10; // demo points
     updateDashboard();
 
-    // Save to Firebase
     db.collection("users").doc(currentUser.id).set(currentUser)
       .then(() => console.log("Click recorded in Firebase"))
       .catch(err => console.error(err));
 
-    // Display converted link
     convertResult.innerHTML = `
       <a href="${converted}" target="_blank" style="display:block;font-weight:bold;word-break:break-all;">
         👉 Open Affiliate Link
       </a>
       <p class="small">
-        Make sure to checkout after clicking this link to ensure commission tracking.
+        Make sure to checkout after clicking this link to track commission.
       </p>
     `;
   });
 
-  // ===== WITHDRAW =====
+  // Withdraw
   withdrawBtn.addEventListener("click", () => {
     if(!currentUser){ alert("Please login first"); return; }
-    if(currentUser.balance <= 0){ withdrawMsg.textContent = "No balance to withdraw."; return; }
+    if(currentUser.balance <= 0){ withdrawMsg.textContent = "No balance"; return; }
 
-    const code = prompt("Enter admin authorization code:");
+    const code = prompt("Enter admin code:");
     if(code !== "1234"){ alert("Authorization failed"); return; }
 
     alert("Withdraw approved (demo)");
     currentUser.balance = 0;
     updateDashboard();
-    withdrawMsg.textContent = "Withdraw approved.";
+    withdrawMsg.textContent = "Withdraw approved";
 
     db.collection("users").doc(currentUser.id).set(currentUser);
   });
 
-  // INITIAL DASHBOARD
   updateDashboard();
 
 });
