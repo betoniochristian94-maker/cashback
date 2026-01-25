@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 🛒 Affiliate links
-  const SHOPEE_AFFILIATE_LINK = "https://s.shopee.ph/AABBJBucdn";
-  const TIKTOK_AFFILIATE_LINK = "https://vt.tiktok.com/PHLCCP7L9B/";
+  // 🛒 Your Affiliate IDs
+  const SHOPEE_AFFILIATE_ID = "13316510024"; // Your Shopee ID
+  const TIKTOK_AFFILIATE_ID = "PHLCCP7L9B"; // Your TikTok ID
 
   // 🔑 Firebase config
   const firebaseConfig = {
@@ -84,18 +84,29 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   });
 
-  // 🔹 Convert affiliate link
+  // 🔹 Convert affiliate link (dynamic)
   convertBtn.addEventListener("click", () => {
     if(!currentUser){ alert("Please login first"); return; }
 
-    const link = linkInput.value.trim().toLowerCase();
+    const link = linkInput.value.trim();
     if(!link){ alert("Paste a Shopee or TikTok link"); return; }
 
     let converted = "";
-    if(link.includes("shopee")) converted = SHOPEE_AFFILIATE_LINK;
-    else if(link.includes("tiktok")) converted = TIKTOK_AFFILIATE_LINK;
-    else { alert("Only Shopee or TikTok links supported"); return; }
 
+    if(link.includes("shopee")) {
+      // Preserve original link, append affiliate ID
+      converted = link + (link.includes("?") ? "&" : "?") + `affiliate_id=${SHOPEE_AFFILIATE_ID}`;
+    } 
+    else if(link.includes("tiktok")) {
+      // Preserve original link, append TikTok affiliate ID
+      converted = link + (link.includes("?") ? "&" : "?") + `aff_id=${TIKTOK_AFFILIATE_ID}`;
+    }
+    else {
+      alert("Only Shopee or TikTok links supported");
+      return;
+    }
+
+    // Update user clicks and balance
     currentUser.clicks += 1;
     currentUser.balance += 10; // demo points
     updateDashboard();
